@@ -15,7 +15,6 @@ class FileController extends Controller
         $validated = $request->validate([
             'name' => 'required|string',
             'content' => 'nullable|string',   
-            'user_id' => 'required|exists:users,id',
         ]);
 
         // getting authenticated user from JWT token
@@ -43,7 +42,7 @@ class FileController extends Controller
 
         return response()->json([
             "message" => "File created successfully!",
-            "article" => $file
+            "file" => $file
         ]);
     }
 }
