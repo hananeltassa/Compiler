@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\File;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -22,6 +24,16 @@ class FileController extends Controller
         Storage::disk('public')
         ->put($path, !empty($validated['content']) ? $validated['content'] : '');
 
+        // creating a new file
+        $file = File::create([
+            'name' => $validated['name'],
+            'path' => $path,
+            'user_id' => $user_id, 
+        ]);
 
+        return response()->json([
+            "message" => "File created successfully",
+            "article" => $file
+        ]);
     }
 }
