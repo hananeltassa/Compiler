@@ -9,8 +9,8 @@ Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login']);
 
 // Protected routes using JWT authentication
-Route::middleware('auth:api')->group(function () {
+Route::middleware('auth:jwt')->group(function () {
     Route::get('user', [JWTAuthController::class, 'getUser']); 
     Route::post('logout', [JWTAuthController::class, 'logout']); 
-    Route::post('refresh', [JWTAuthController::class, 'refresh']); 
+
 });
