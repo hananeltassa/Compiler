@@ -15,6 +15,14 @@ class CollaboratorController extends Controller
             'role' => 'required|in:Editor,Viewer', 
         ]);
 
+        try {
+            $user = JWTAuth::parseToken()->authenticate();
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Unauthorized User'
+            ], 401);
+        }
+
 
         $file = File::find($request->file_id);
         if (!$file) {
@@ -52,4 +60,28 @@ class CollaboratorController extends Controller
             'collaborators' => $collaborators
         ]);
     }
+
+    public function delete(Request $request)
+    {
+        $request->validate([
+            'file_id' => 'required|exists:files,id',
+            'user_id' => 'required|exists:users,id', 
+        ]);
+        
+
+        $collaborator = Collaborator::where('file_id', $request->file_id)
+                                    ->where('user_id', $request->user_id)
+                                    ->first();
+
+        if (!$collaborator) {
+            return response()->json(['error' => 'Collaborator not found for this file.'], 404);
+        }
+
+        $collaborator->delete();
+
+        return response()->json([
+            'message' => 'Collaborator removed successfully.'
+        ]);
+    }
+
 }

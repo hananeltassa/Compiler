@@ -16,6 +16,7 @@ Route::middleware('auth:api')->group(function () {
 
     Route::post('/collaborators', [CollaboratorController::class, 'invite']);
     Route::get('/collaborators', [CollaboratorController::class, 'index']);
+    Route::delete('/collaborators', [CollaboratorController::class, 'delete']);
 
     Route::post('files', [FileController::class, 'create_file']);
 });
