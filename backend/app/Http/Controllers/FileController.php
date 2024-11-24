@@ -42,11 +42,16 @@ class FileController extends Controller
      // fetching all files
      public function fetch_all_files()
      {
-         $files = File::all();
-         return response()->json([
-             "message" => "All files fetched successfully!",
-             'files' => $files
-         ]);
+        // getting authenticated user
+        $user = JWTAuth::parseToken()->authenticate();
+    
+        // fetching all files belonging to user
+        $files = File::where('user_id', $user->id)->get();
+
+        return response()->json([
+            "message" => "Fetched all files successfully!",
+            'files' => $files
+        ]);
      }
 
 }
