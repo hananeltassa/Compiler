@@ -2,12 +2,18 @@ import React, {useState} from "react";
 import styles from "../styles/DropDown.module.css";
 
 function DropdownButton() {
+    const [isOpen, setIsOpen] = useState(false);
+
+    const toggleDropdown = () => {
+        setIsOpen(!isOpen);
+    };
+
     return (
         <div className={styles.dropdown}>
-            <button className={styles.dropdownButton}>
+            <button className={styles.dropdownButton} onClick={toggleDropdown}>
                 Actions <span className={styles.arrow}>▼</span>
             </button>
-            {
+            {isOpen && (
                 <div className={styles.dropdownMenu}>
                     <a href="#download" className={styles.dropdownItem}>
                         Download
@@ -25,7 +31,7 @@ function DropdownButton() {
                         Attend a Workshop
                     </a>
                 </div>
-            }
+            )}
         </div>
     );
 }
