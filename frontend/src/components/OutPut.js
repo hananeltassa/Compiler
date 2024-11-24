@@ -1,4 +1,6 @@
+import styles from "../styles/";
+
 const OutPut = () => {
-    return <></>;
+    return <div></div>;
 };
 export default OutPut;
