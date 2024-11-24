@@ -2,7 +2,7 @@ import {useNavigate} from "react-router-dom";
 import styles from "../styles/auth.module.css";
 import useForm from "../hooks/useForm";
 
-const SignUp = () => {
+const Register = () => {
     const navigate = useNavigate();
     const {form, updateForm} = useForm({
         username: "",
@@ -45,4 +45,4 @@ const SignUp = () => {
     );
 };
 
-export default SignUp;
+export default Register;
