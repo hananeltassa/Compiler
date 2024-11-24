@@ -4,7 +4,6 @@ import styles from "../styles/compiler.module.css";
 const Compiler = () => {
     return (
         <div className={styles.box}>
-            <DropdownButton />
             <CodeEditor />
         </div>
     );

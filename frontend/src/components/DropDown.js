@@ -2,17 +2,16 @@ import React, {useState} from "react";
 import styles from "../styles/DropDown.module.css";
 import {LANGUAGE} from "../constant";
 
-function DropdownButton() {
+function DropdownButton({handleLanguageSelect, language}) {
     const [isOpen, setIsOpen] = useState(false);
-    const [language, setLanguage] = useState("javascript");
     const languages = Object.entries(LANGUAGE);
 
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
 
-    const handleLanguageSelect = (lang) => {
-        setLanguage(lang);
+    const handleLanguage = (lang) => {
+        handleLanguageSelect(lang);
         setIsOpen(false);
     };
 
@@ -24,7 +23,7 @@ function DropdownButton() {
             {isOpen && (
                 <div className={styles.dropdownMenu}>
                     {languages.map(([lang, ver]) => (
-                        <span key={lang} className={styles.dropdownItem} onClick={() => handleLanguageSelect(lang)}>
+                        <span key={lang} className={styles.dropdownItem} onClick={() => handleLanguage(lang)}>
                             {`${lang} - ${ver}`}
                         </span>
                     ))}
