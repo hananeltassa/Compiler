@@ -10,7 +10,11 @@ class Collaborator extends Model
     protected $fillable = [
         'file_id',
         'user_id',
+        'invited_email',
         'role',
+        'status',
+        'invited_at',
+        'accepted_at',
     ];
 
     public function user()
