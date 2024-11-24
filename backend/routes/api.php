@@ -18,7 +18,10 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/collaborators', [CollaboratorController::class, 'index']);
     Route::delete('/collaborators', [CollaboratorController::class, 'delete']);
 
-    Route::post('files', [FileController::class, 'create_file']);
-    Route::get('files', [FileController::class, 'fetch_all_files']);
+    Route::prefix('files')->group(function () {
+        Route::post('/', [FileController::class, 'create_file']);  // Create a new file
+        Route::get('/', [FileController::class, 'fetch_all_files']);  // Fetch all files
+        Route::get('{id}', [FileController::class, 'fetch_file']);  // Fetch file by ID
+    });
 
 });
