@@ -10,9 +10,28 @@ const Register = () => {
         password: "",
         verifyPassword: "",
     });
-    function handleSubmit(e) {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
-    }
+
+        const formData = {
+            name: form.username,
+            email: form.email,
+            password: form.password,
+            password_confirmation: form.verifyPassword,
+        };
+
+        const response = await fetch("http://127.0.0.1:8000/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        console.log(data);
+    };
     return (
         <div className={styles.signupContainer}>
             <form className={styles.signupForm}>
@@ -31,7 +50,7 @@ const Register = () => {
                     onChange={updateForm}
                     required
                 />
-                <button type="submit" onClick={handleSubmit}>
+                <button type="submit" onClick={(e) => handleSubmit(e)}>
                     Sign Up
                 </button>
                 <p>
