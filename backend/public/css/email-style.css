@@ -29,12 +29,17 @@ body {
     display: inline-block;
     padding: 12px 20px;
     margin-top: 20px;
-    background-color: #007bff;
     color: #fff;
     text-decoration: none;
     border-radius: 4px;
 }
 
+.accept-btn{
+    background-color: #007bff;
+}
+.deny-btn {
+    background-color: #ff0015;
+}
 .footer {
     font-size: 12px;
     color: #888;
