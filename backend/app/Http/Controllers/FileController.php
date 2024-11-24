@@ -76,6 +76,21 @@ class FileController extends Controller
             'content' => 'nullable|string',
         ]);
 
+        // finding file
+        $file = File::findOrFail($id);
+
+        // updating content in storage
+        if (!empty($validated['content'])) {
+            Storage::disk('public')->put($file->path, $validated['content']);
+
+            // updating timstamp in db
+            $file->touch();
+        }
+
+        return response()->json([
+            'message' => 'File updated successfully!',
+            'file' => $file,
+        ]);
     }
 
 }
