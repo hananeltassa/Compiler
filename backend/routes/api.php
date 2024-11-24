@@ -10,6 +10,8 @@ use App\Http\Controllers\InvitationController;
 Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login'])->name('login');
 
+Route::get('invitations/accept/{id}', [InvitationController::class, 'acceptInvitation'])->name('invitation.accept');
+
 Route::middleware('auth:api')->group(function () {
     // Authenticated routes
     Route::get('user', [JWTAuthController::class, 'getUser']); 
@@ -30,8 +32,6 @@ Route::middleware('auth:api')->group(function () {
 
     Route::prefix('invitations')->group(function () {
         Route::post('/', [InvitationController::class, 'sendInvitation']); 
-        Route::get('/', [InvitationController::class, 'listInvitations']); 
-        Route::patch('{id}', [InvitationController::class, 'updateInvitationStatus']);
     });
 
 });

@@ -40,7 +40,8 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Failed to create invitation.'], 500);
         }
 
-        $invitationLink = url("/invitation/accept/{$invitation->id}");
+        $invitationLink = url("/api/invitations/accept/{$invitation->id}");
+
 
 
         Mail::to($validated['invited_email'])->send(new InvitationMail($invitation, $invitationLink));
@@ -49,30 +50,35 @@ class InvitationController extends Controller
         return response()->json(['message' => 'Invitation sent successfully!', 'invitation' => $invitation], 201);
     }
 
-    public function listInvitations(Request $request)
+
+    public function acceptInvitation($id)
     {
-        $invitations = Invitation::with('file')
-            ->where('invited_email', $request->user()->email)
-            ->orWhereHas('file', function ($query) use ($request) {
-                $query->where('user_id', $request->user()->id);
-            })
-            ->get();
-
-        return response()->json(['invitations' => $invitations]);
+        \Log::info('Invitation Accepting', ['invitation_id' => $id]);
+    
+        try {
+            $invitation = Invitation::findOrFail($id);
+    
+            \Log::info('Invitation Found', ['invitation' => $invitation]);
+    
+            // Check if status is exactly 'pending' (lowercase)
+            if ($invitation->status !== 'pending') {
+                \Log::info('Invitation Already Processed', ['invitation_id' => $id, 'status' => $invitation->status]);
+                return response()->json(['message' => 'This invitation has already been processed.'], 400);
+            }
+    
+            // Update status to 'accepted' and save
+            $invitation->status = 'accepted';
+            $invitation->save();
+            
+            \Log::info('Invitation Accepted and Saved', ['invitation_id' => $id, 'status' => $invitation->status]);
+    
+            return response()->json(['message' => 'Invitation accepted successfully!'], 200);
+        } catch (\Exception $e) {
+            \Log::error('Error accepting invitation', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to process the request.'], 500);
+        }
     }
-
-
-    public function updateInvitationStatus(Request $request, $id){
-        $validated = $request->validate([
-            'status' => 'required|in:Pending,Accepted,Denied',
-        ]);
-
-        $invitation = Invitation::findOrFail($id);
-
-        $invitation->update(['status' => $validated['status']]);
-
-        return response()->json(['message' => 'Invitation status updated successfully!', 'invitation' => $invitation]);
-    }
+    
 
 
 }

@@ -21,7 +21,7 @@ class InvitationMail extends Mailable
     public function __construct($invitation, $invitationLink)
     {
         $this->invitation = $invitation;
-        $this->invitationLink = $invitationLink;
+        $this->invitationLink = url("/api/invitations/accept/{$invitation->id}");
     }
 
 
