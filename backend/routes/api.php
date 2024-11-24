@@ -22,7 +22,8 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/', [FileController::class, 'create_file']);  
         Route::get('/', [FileController::class, 'fetch_all_files']);  
         Route::get('{id}', [FileController::class, 'fetch_file']); 
-        Route::put('{id}', [FileController::class, 'edit_file']);   
+        Route::put('{id}', [FileController::class, 'edit_file']);
+        Route::delete('{id}', [FileController::class, 'delete_file']); 
     });
 
 });
