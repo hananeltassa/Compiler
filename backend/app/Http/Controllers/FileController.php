@@ -69,4 +69,13 @@ class FileController extends Controller
         ]);
     }
 
+    public function edit(Request $request, $id)
+    {
+        // validating if there is content 
+        $validated = $request->validate([
+            'content' => 'nullable|string',
+        ]);
+
+    }
+
 }
