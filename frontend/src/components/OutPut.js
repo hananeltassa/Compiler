@@ -1,6 +1,6 @@
-import styles from "../styles/";
+import styles from "../styles/Output.module.css";
 
 const OutPut = () => {
-    return <div></div>;
+    return <div className={styles.box}>test</div>;
 };
 export default OutPut;
