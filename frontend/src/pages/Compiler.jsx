@@ -1,6 +1,4 @@
-import {Box} from "@chakra-ui/react";
-
 const Compiler = () => {
-    return <Box>Hello</Box>;
+    return <div>Hello</div>;
 };
 export default Compiler;
