@@ -20,7 +20,8 @@
             <p>You have been invited to collaborate on a file. Click the link below to accept the invitation:</p>
 
             <!-- The dynamic invitation link -->
-            <a href="{{ $invitationLink }}" class="btn">Accept Invitation</a>
+            <p><a href="{{ $acceptLink }}" class="btn accept-btn">Accept Invitation</a></p>
+            <p><a href="{{ $denyLink }}" class="btn deny-btn">Deny Invitation</a></p>
 
             <p>If you did not request this, please ignore this email.</p>
         </div>
