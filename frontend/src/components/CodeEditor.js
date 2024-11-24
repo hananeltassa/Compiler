@@ -20,7 +20,7 @@ const CodeEditor = () => {
             <Editor
                 height="75vh"
                 theme="vs-dark"
-                defaultLanguage="javascript"
+                language={language}
                 value={value}
                 onChange={(value) => {
                     setValue(value);
