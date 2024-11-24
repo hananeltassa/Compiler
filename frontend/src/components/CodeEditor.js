@@ -4,6 +4,10 @@ import {useRef, useState} from "react";
 const CodeEditor = () => {
     const [value, setValue] = useState("");
     const editorRef = useRef();
+    const onMount = (editor) => {
+        editorRef.current = editor;
+        editor.focus();
+    };
     return (
         <div>
             <Editor
@@ -14,6 +18,7 @@ const CodeEditor = () => {
                 onChange={(value) => {
                     setValue(value);
                 }}
+                onMount={onMount}
                 defaultValue="// some comment"
             />
         </div>
