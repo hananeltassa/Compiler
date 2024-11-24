@@ -2,6 +2,7 @@ import {Editor} from "@monaco-editor/react";
 import {useRef, useState} from "react";
 import DropdownButton from "./DropDown";
 import {CODE_SNIPPETS} from "../constant";
+import styles from "../styles/CodeEditor.module.css";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
@@ -17,19 +18,23 @@ const CodeEditor = () => {
     };
     return (
         <div>
-            <DropdownButton language={language} handleLanguageSelect={handleLanguageSelect} />
+            <h3 style={{display: "flex", alignitems: "flex-start"}}> Languages </h3>
 
-            <Editor
-                height="75vh"
-                theme="vs-dark"
-                language={language}
-                value={value}
-                onChange={(value) => {
-                    setValue(value);
-                }}
-                onMount={onMount}
-                defaultValue="// some comment"
-            />
+            <DropdownButton language={language} handleLanguageSelect={handleLanguageSelect} />
+            <div style={{display: "flex"}}>
+                <Editor
+                    height="75vh"
+                    theme="vs-dark"
+                    width="50%"
+                    language={language}
+                    value={value}
+                    onChange={(value) => {
+                        setValue(value);
+                    }}
+                    onMount={onMount}
+                    defaultValue={CODE_SNIPPETS[language]}
+                />
+            </div>
         </div>
     );
 };

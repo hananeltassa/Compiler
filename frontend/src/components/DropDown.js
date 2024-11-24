@@ -16,7 +16,7 @@ function DropdownButton({handleLanguageSelect, language}) {
     };
 
     return (
-        <div className={styles.dropdown}>
+        <div className={styles.dropdown} style={{display: "flex", alignitems: "flex-start"}}>
             <button className={styles.dropdownButton} onClick={toggleDropdown}>
                 {language} <span className={styles.arrow}>▼</span>
             </button>
