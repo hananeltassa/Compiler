@@ -17,6 +17,7 @@ class InvitationController extends Controller
         $validated = $request->validate([
             'file_id' => 'required|exists:files,id',
             'invited_email' => 'required|email',
+            'role' => 'required|in:editor,viewer',
         ]);
 
         $user = JWTAuth::parseToken()->authenticate();
@@ -34,6 +35,7 @@ class InvitationController extends Controller
             'invited_email' => $validated['invited_email'],
             'user_id' => $user->id,
             'status' => 'Pending',
+            'role' => $validated['role'],
         ]);
 
         if (!$invitation) {
