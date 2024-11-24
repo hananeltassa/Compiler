@@ -1,9 +1,10 @@
 import React, {useState} from "react";
 import styles from "../styles/DropDown.module.css";
+import {LANGUAGE} from "../constant";
 
 function DropdownButton() {
     const [isOpen, setIsOpen] = useState(false);
-
+    const languages = Object.entries(LANGUAGE);
     const toggleDropdown = () => {
         setIsOpen(!isOpen);
     };
@@ -15,21 +16,11 @@ function DropdownButton() {
             </button>
             {isOpen && (
                 <div className={styles.dropdownMenu}>
-                    <a href="#download" className={styles.dropdownItem}>
-                        Download
-                    </a>
-                    <a href="#create-copy" className={styles.dropdownItem}>
-                        Create a Copy
-                    </a>
-                    <a href="#mark-draft" className={styles.dropdownItem}>
-                        Mark as Draft
-                    </a>
-                    <a href="#delete" className={styles.dropdownItem}>
-                        Delete
-                    </a>
-                    <a href="#workshop" className={styles.dropdownItem}>
-                        Attend a Workshop
-                    </a>
+                    {languages.map(([lang, ver]) => (
+                        <span key={lang} className={styles.dropdownItem}>
+                            {`${lang} - ${ver}`}
+                        </span>
+                    ))}
                 </div>
             )}
         </div>
