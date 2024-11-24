@@ -12,36 +12,6 @@ use App\Mail\CollaborationInvitationMail;
 class CollaboratorController extends Controller
 {
 
-    public function invite(Request $request){
-        $request->validate([
-            'role' => 'required|in:Editor,Viewer', 
-        ]);
-
-
-
-
-        $file = File::find($request->file_id);
-        if (!$file) {
-            return response()->json(['error' => 'The specified file does not exist.'], 404);
-        }
-
-        $user = User::find($request->user_id);
-        if (!$user) {
-            return response()->json(['error' => 'The specified user does not exist.'], 404);
-        }
-
-        $collaborator = Collaborator::create([
-            'file_id' => $request->file_id,
-            'user_id' => $request->user_id,
-            'role' => $request->role
-        ]);
-
-        return response()->json([
-            'message' => 'Collaborator invited successfully',
-            'collaborator' => $collaborator
-        ], 201);
-    }
-
     public function index(Request $request){
 
         $request->validate([
