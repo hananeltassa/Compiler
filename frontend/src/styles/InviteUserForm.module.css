@@ -1,0 +1,157 @@
+/* Modal Overlay */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.7); /* Darker overlay for contrast */
+    z-index: 1000;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.modalContent {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 12px;
+    width: 450px;
+    max-width: 90%;
+    box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1); /* Softer shadow for a floating effect */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Align text to the left */
+    position: relative;
+    transition: transform 0.3s ease-out;
+}
+
+h2 {
+    font-size: 1.75rem;
+    margin-bottom: 20px;
+    color: #333;
+    text-align: left; 
+}
+
+form {
+    width: 100%;
+}
+
+label {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 10px;
+    display: block;
+    font-weight: 500;
+    text-align: left; 
+}
+
+input,
+select {
+    width: 95%;
+    padding: 12px;
+    margin-bottom: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 1rem;
+    color: #333;
+    background-color: #f9f9f9;
+    transition: all 0.3s ease;
+}
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: #007bff;
+    background-color: #fff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+}
+
+/* Button styling */
+button {
+    width: 100%;
+    margin: 2px;
+    padding: 12px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    font-weight: 600;
+}
+
+button:disabled {
+    background-color: #dcdcdc;
+    cursor: not-allowed;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Error message */
+.error {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    margin-top: 10px;
+    text-align: left; /* Align error text to the left */
+}
+
+.closeBtn {
+    background: #f1f1f1;
+    margin-top: 5px;
+    color: #333;
+    padding: 8px 15px;
+    border: none;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 1.2rem;
+}
+
+.closeBtn:hover {
+    background-color: #ccc;
+}
+
+/* Focus states */
+input:focus, select:focus {
+    border-color: #0056b3;
+    background-color: #fff;
+    box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Animation */
+@keyframes modalFadeIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.modalContent {
+    animation: modalFadeIn 0.3s ease-out;
+}
+
+/* Responsiveness */
+@media (max-width: 600px) {
+    .modalContent {
+        width: 90%;
+        padding: 20px;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+
+    input,
+    select,
+    button {
+        padding: 10px;
+    }
+}
