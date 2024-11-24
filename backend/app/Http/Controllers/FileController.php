@@ -54,4 +54,19 @@ class FileController extends Controller
         ]);
      }
 
+      // fetching a specific file by ID
+    public function fetch_file($id)
+    {
+        // finding file by ID
+        $file = File::findOrFail($id);
+        
+        // getting the content from storage
+        $content = Storage::disk('public')->get($file->path);
+
+        return response()->json([
+            'file' => $file,
+            'content' => $content,
+        ]);
+    }
+
 }
