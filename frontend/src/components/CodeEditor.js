@@ -1,8 +1,9 @@
 import {Editor} from "@monaco-editor/react";
-import {useState} from "react";
+import {useRef, useState} from "react";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
+    const editorRef = useRef();
     return (
         <div>
             <Editor
