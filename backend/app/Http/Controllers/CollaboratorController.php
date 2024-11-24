@@ -6,6 +6,8 @@ use App\Models\Collaborator;
 use App\Models\User; 
 use App\Models\File;  
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CollaborationInvitationMail;
 
 class CollaboratorController extends Controller
 {
@@ -15,13 +17,7 @@ class CollaboratorController extends Controller
             'role' => 'required|in:Editor,Viewer', 
         ]);
 
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Unauthorized User'
-            ], 401);
-        }
+
 
 
         $file = File::find($request->file_id);
