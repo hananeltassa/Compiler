@@ -3,6 +3,7 @@ import {useRef, useState} from "react";
 import DropdownButton from "./DropDown";
 import {CODE_SNIPPETS} from "../constant";
 import styles from "../styles/CodeEditor.module.css";
+import OutPut from "./OutPut";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
@@ -34,6 +35,7 @@ const CodeEditor = () => {
                     onMount={onMount}
                     defaultValue={CODE_SNIPPETS[language]}
                 />
+                <OutPut />
             </div>
         </div>
     );
