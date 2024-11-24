@@ -69,7 +69,7 @@ class FileController extends Controller
         ]);
     }
 
-    public function edit(Request $request, $id)
+    public function edit_file(Request $request, $id)
     {
         // validating if there is content 
         $validated = $request->validate([
