@@ -1,64 +1,66 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import styles from '../styles/auth.module.css';
-
+import {useNavigate} from "react-router-dom";
+import styles from "../styles/auth.module.css";
+import useForm from "../hooks/useForm";
 
 const Register = () => {
-    const [username, setUsername] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
-    const [successMessage, setSuccessMessage] = useState("");
+    const navigate = useNavigate();
+    const {form, updateForm} = useForm({
+        username: "",
+        email: "",
+        password: "",
+        verifyPassword: "",
+    });
 
-  
-    const handleRegister = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
+        const formData = {
+            name: form.username,
+            email: form.email,
+            password: form.password,
+            password_confirmation: form.verifyPassword,
+        };
+
+        const response = await fetch("http://127.0.0.1:8000/api/register", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(formData),
+        });
+
+        const data = await response.json();
+        console.log(data);
     };
-
     return (
-        <div className={styles.registerContainer}>
-        <div className={styles.container}>
-            <h2>Register</h2>
-            <form onSubmit={handleRegister}>
-                <div>
-                    <label>Username</label>
-                    <input 
-                        type="text" 
-                        value={username} 
-                        onChange={(e) => setUsername(e.target.value)} 
-                        placeholder="Enter Your Username"
-                    />
-                </div>
-
-                <div>
-                    <label>Email</label>
-                    <input 
-                        type="email" 
-                        value={email} 
-                        onChange={(e) => setEmail(e.target.value)} 
-                        placeholder="Enter your email"
-                    />
-                </div>
-
-                <div>
-                    <label>Password</label>
-                    <input 
-                        type="password" 
-                        value={password} 
-                        onChange={(e) => setPassword(e.target.value)} 
-                        placeholder="Enter your password"
-                    />
-                </div>
-
-
-                {error && <div className="error">{error}</div>}
-                {successMessage && <div className="success">{successMessage}</div>}
-
-                <button type="submit">Register</button>
+        <div className={styles.signupContainer}>
+            <form className={styles.signupForm}>
+                <h1>Sign Up</h1>
+                Username
+                <input type="text" placeholder="Username" name="username" onChange={updateForm} required />
+                Email
+                <input type="email" placeholder="Email" name="email" onChange={updateForm} required />
+                Password
+                <input type="password" placeholder="Password" name="password" onChange={updateForm} required />
+                Verify Password
+                <input
+                    type="password"
+                    placeholder="Verify your password"
+                    name="verifyPassword"
+                    onChange={updateForm}
+                    required
+                />
+                <button type="submit" onClick={(e) => handleSubmit(e)}>
+                    Sign Up
+                </button>
+                <p>
+                    Already have an account?
+                    <span className={styles.loginLink} onClick={() => navigate("/login")}>
+                        Log In
+                    </span>
+                </p>
             </form>
         </div>
-    </div>
     );
 };
 
