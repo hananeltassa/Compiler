@@ -15,6 +15,6 @@ Route::middleware('auth:api')->group(function () {
     Route::post('logout', [JWTAuthController::class, 'logout']);
 
     Route::post('files', [FileController::class, 'create_file']);
-    Route::get('files', [FileController::class, 'create_file']);
+    Route::get('files', [FileController::class, 'fetch_all_files']);
 
 });
