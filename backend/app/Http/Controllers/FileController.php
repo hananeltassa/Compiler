@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\File;
+use App\Events\FileCreated;
+use App\Events\FileUpdated;
+use App\Events\FileDeleted;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -32,6 +35,9 @@ class FileController extends Controller
             'path' => $path,
             'user_id' => $user->id, 
         ]);
+
+        // Broadcasting file creation
+        broadcast(new FileCreated($file, $user->id));
 
         return response()->json([
             "message" => "File created successfully!",
@@ -84,6 +90,9 @@ class FileController extends Controller
 
             // updating timstamp in db
             $file->touch();
+
+            // Broadcasting file update
+            broadcast(new FileUpdated($file, $validated['content']));
         }
 
         return response()->json([
@@ -103,6 +112,9 @@ class FileController extends Controller
 
     // deleting file in db
     $file->delete();
+
+    // Broadcasting file deletion
+    broadcast(new FileDeleted($id));
 
     return response()->json([
         'message' => 'File deleted successfully!',
