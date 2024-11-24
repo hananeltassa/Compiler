@@ -40,12 +40,7 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Failed to create invitation.'], 500);
         }
 
-        $invitationLink = url("/api/invitations/accept/{$invitation->id}");
-
-
-
-        Mail::to($validated['invited_email'])->send(new InvitationMail($invitation, $invitationLink));
-
+        Mail::to($validated['invited_email'])->send(new InvitationMail($invitation));
 
         return response()->json(['message' => 'Invitation sent successfully!', 'invitation' => $invitation], 201);
     }

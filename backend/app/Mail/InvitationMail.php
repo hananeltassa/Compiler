@@ -11,17 +11,20 @@ class InvitationMail extends Mailable
     use Queueable, SerializesModels;
 
     public $invitation;
-    public $invitationLink;
+    public $acceptLink;
+    public $denyLink;
+
 
     /**
      * Create a new message instance.
      *
      * @param $invitation
      */
-    public function __construct($invitation, $invitationLink)
+    public function __construct($invitation)
     {
         $this->invitation = $invitation;
-        $this->invitationLink = url("/api/invitations/accept/{$invitation->id}");
+        $this->acceptLink = url("/api/invitations/accept/{$invitation->id}");
+        $this->denyLink = url("/api/invitations/deny/{$invitation->id}");
     }
 
 
@@ -34,7 +37,8 @@ class InvitationMail extends Mailable
             ->subject('You Have Been Invited to Collaborate')
             ->with([
                 'invitation' => $this->invitation,
-                'invitationLink' => $this->invitationLink,
+                'acceptLink' => $this->acceptLink,
+                'denyLink' => $this->denyLink,
             ]);
     }
 }
