@@ -1,15 +1,17 @@
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import styles from "../styles/auth.module.css";
 import useForm from "../hooks/useForm";
 
 const Login = () => {
     const navigate = useNavigate();
-    const {form, updateForm} = useForm({
+    const { form, updateForm } = useForm({
         email: "",
         password: "",
     });
+
     const handleSubmit = async (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
+
         const response = await fetch("http://127.0.0.1:8000/api/login", {
             method: "POST",
             headers: {
@@ -19,27 +21,47 @@ const Login = () => {
         });
 
         const data = await response.json();
-        console.log(data);
+
+        if (response.ok) {
+            localStorage.setItem('token', data.token);
+            navigate("/compiler");
+        } else {
+            alert(data.message || "Login failed");
+        }
     };
+
     return (
         <div className={styles.signupContainer}>
-            <form className={styles.signupForm}>
+            <form className={styles.signupForm} onSubmit={handleSubmit}>
                 <h1>Sign In</h1>
-                Email
-                <input type="email" placeholder="Email" name="email" onChange={updateForm} required />
-                Password
-                <input type="password" placeholder="Password" name="password" onChange={updateForm} required />
-                <button type="submit" onClick={handleSubmit}>
-                    Sign In
-                </button>
+                <label>Email</label>
+                <input 
+                    type="email" 
+                    placeholder="Email" 
+                    name="email" 
+                    value={form.email}  
+                    onChange={updateForm} 
+                    required 
+                />
+                <label>Password</label>
+                <input 
+                    type="password" 
+                    placeholder="Password" 
+                    name="password" 
+                    value={form.password} 
+                    onChange={updateForm} 
+                    required 
+                />
+                <button type="submit">Sign In</button>
                 <p>
                     Do not have an account?
                     <span className={styles.loginLink} onClick={() => navigate("/")}>
-                        Sign-up
+                        Sign up
                     </span>
                 </p>
             </form>
         </div>
     );
 };
+
 export default Login;
