@@ -18,20 +18,13 @@ class FileController extends Controller
         ]);
 
         // getting authenticated user from JWT token
-        try {
-            $user = JWTAuth::parseToken()->authenticate();
-        } catch (\Exception $e) {
-            return response()->json([
-                'error' => 'Unauthorized User'
-            ], 401);
-        }
+        $user = JWTAuth::parseToken()->authenticate();
 
         // generating a unique file path using uniqid()
         $path = 'files/' . uniqid() . '_' . $validated['name'];
 
         // saving in public storage, if empty save empty file
-        Storage::disk('public')
-        ->put($path, !empty($validated['content']) ? $validated['content'] : '');
+        Storage::disk('public')->put($path, $validated['content'] ?? '');
 
         // creating a new file
         $file = File::create([
@@ -45,4 +38,20 @@ class FileController extends Controller
             "file" => $file
         ]);
     }
+
+     // fetching all files
+     public function fetch_all_files()
+     {
+        // getting authenticated user
+        $user = JWTAuth::parseToken()->authenticate();
+    
+        // fetching all files belonging to user
+        $files = File::where('user_id', $user->id)->get();
+
+        return response()->json([
+            "message" => "Fetched all files successfully!",
+            'files' => $files
+        ]);
+     }
+
 }
