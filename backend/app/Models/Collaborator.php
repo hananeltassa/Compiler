@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Collaborator extends Model
@@ -9,7 +10,11 @@ class Collaborator extends Model
     protected $fillable = [
         'file_id',
         'user_id',
+        'invited_email',
         'role',
+        'status',
+        'invited_at',
+        'accepted_at',
     ];
 
     public function user()
