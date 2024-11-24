@@ -14,8 +14,11 @@ Route::middleware('auth:api')->group(function () {
     Route::get('user', [JWTAuthController::class, 'getUser']); 
     Route::post('logout', [JWTAuthController::class, 'logout']);
 
+    Route::post('/collaborators/invite', [CollaboratorController::class, 'invite']);
+
+
     Route::post('/collaborators', [CollaboratorController::class, 'invite']);
-    Route::get('/collaborators', [CollaboratorController::class, 'index']);
+    //Route::get('/collaborators', [CollaboratorController::class, 'index']);
     Route::delete('/collaborators', [CollaboratorController::class, 'delete']);
 
     Route::post('files', [FileController::class, 'create_file']);
