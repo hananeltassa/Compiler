@@ -38,4 +38,15 @@ class FileController extends Controller
             "file" => $file
         ]);
     }
+
+     // fetching all files
+     public function fetch_all_files()
+     {
+         $files = File::all();
+         return response()->json([
+             "message" => "All files fetched successfully!",
+             'files' => $files
+         ]);
+     }
+
 }
