@@ -6,11 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Invitation extends Model
 {
-    protected $fillable = [
-        'file_id',
-        'invited_email',
-        'status',
-    ];
+    protected $fillable = ['file_id', 'invited_email', 'user_id', 'status'];
+
 
     public function file()
     {
