@@ -39,9 +39,8 @@ class FileController extends Controller
         ]);
     }
 
-     // fetching all files
-     public function fetch_all_files()
-     {
+    // fetching all files
+     public function fetch_all_files(){
         // getting authenticated user
         $user = JWTAuth::parseToken()->authenticate();
     
@@ -54,9 +53,8 @@ class FileController extends Controller
         ]);
      }
 
-      // fetching a specific file by ID
-    public function fetch_file($id)
-    {
+    // fetching a specific file by ID
+    public function fetch_file($id){
         // finding file by ID
         $file = File::findOrFail($id);
         
@@ -69,6 +67,7 @@ class FileController extends Controller
         ]);
     }
 
+    // editing a file
     public function edit_file(Request $request, $id)
     {
         // validating if there is content 
@@ -93,4 +92,20 @@ class FileController extends Controller
         ]);
     }
 
+
+    // deleting a file
+    public function delete_file($id){
+    // finding file by ID
+    $file = File::findOrFail($id);
+
+    // deleting file from storage
+    Storage::disk('public')->delete($file->path);
+
+    // deleting file in db
+    $file->delete();
+
+    return response()->json([
+        'message' => 'File deleted successfully!',
+    ]);
+}
 }
