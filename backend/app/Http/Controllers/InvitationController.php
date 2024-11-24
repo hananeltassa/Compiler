@@ -20,6 +20,11 @@ class InvitationController extends Controller
             'role' => 'required|in:editor,viewer',
         ]);
 
+        $existingUser = \App\Models\User::where('email', $validated['invited_email'])->first();
+        if (!$existingUser) {
+            return response()->json(['message' => 'The invited email does not belong to any registered user.'], 404);
+        }
+
         $user = JWTAuth::parseToken()->authenticate();
 
         $existingInvitation = Invitation::where('file_id', $validated['file_id'])
