@@ -58,23 +58,36 @@ class InvitationController extends Controller
         try {
             $invitation = Invitation::findOrFail($id);
     
-            \Log::info('Invitation Found', ['invitation' => $invitation]);
-    
-            // Check if status is exactly 'pending' (lowercase)
             if ($invitation->status !== 'pending') {
-                \Log::info('Invitation Already Processed', ['invitation_id' => $id, 'status' => $invitation->status]);
                 return response()->json(['message' => 'This invitation has already been processed.'], 400);
             }
     
-            // Update status to 'accepted' and save
             $invitation->status = 'accepted';
             $invitation->save();
-            
-            \Log::info('Invitation Accepted and Saved', ['invitation_id' => $id, 'status' => $invitation->status]);
     
             return response()->json(['message' => 'Invitation accepted successfully!'], 200);
         } catch (\Exception $e) {
-            \Log::error('Error accepting invitation', ['error' => $e->getMessage()]);
+            return response()->json(['message' => 'Failed to process the request.'], 500);
+        }
+    }
+
+    public function denyInvitation($id)
+    {
+        \Log::info('Invitation Denying', ['invitation_id' => $id]);
+    
+        try {
+            $invitation = Invitation::findOrFail($id);
+    
+            if ($invitation->status !== 'pending') {
+                return response()->json(['message' => 'This invitation has already been processed.'], 400);
+            }
+    
+            $invitation->status = 'declined';
+            $invitation->save();
+            
+    
+            return response()->json(['message' => 'Invitation denied successfully!'], 200);
+        } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to process the request.'], 500);
         }
     }
