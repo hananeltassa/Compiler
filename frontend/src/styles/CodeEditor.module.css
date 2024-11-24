@@ -1,4 +1,22 @@
-.dropButton {
-    display: "flex";
-    align-items: "flex-start";
+/* Editor Container */
+.editorContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* Editor component styles */
+.editor {
+    flex-grow: 2; 
+    background-color: #1e1e1e;
+}
+
+/* Output styling */
+.outputContainer {
+    margin-top: 20px;
+    background-color: #f4f4f4;
+    padding: 10px;
+    min-height: 200px; 
+    border: 1px solid #ccc;
+    border-radius: 5px;
 }
