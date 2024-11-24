@@ -1,9 +1,20 @@
 import {Editor} from "@monaco-editor/react";
+import {useState} from "react";
 
 const CodeEditor = () => {
+    const [value, setValue] = useState("");
     return (
         <div>
-            <Editor height="75vh" theme="vs-dark" defaultLanguage="javascript" defaultValue="// some comment" />
+            <Editor
+                height="75vh"
+                theme="vs-dark"
+                defaultLanguage="javascript"
+                value={value}
+                onChange={(value) => {
+                    setValue(value);
+                }}
+                defaultValue="// some comment"
+            />
         </div>
     );
 };
