@@ -1,17 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { addFile, setCurrentFile, setError, setLoading } from "../redux/features/fileSlice";
+import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
 import axios from "axios";
 import styles from "../styles/FileTabs.module.css";
 import InviteUserForm from "./InviteUserForm";
 
 const FileTabs = () => {
     const dispatch = useDispatch();
-    const files = useSelector((state) => state.file.files); 
+    const files = useSelector((state) => state.file.files);  // Get files from Redux state
     const currentFile = useSelector((state) => state.file.currentFile); 
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showNameInput, setShowNameInput] = useState(false); // To toggle file name input
     const [newFileName, setNewFileName] = useState(""); // New file name input
+
+    // Fetch files when the component mounts
+    useEffect(() => {
+        const fetchFiles = async () => {
+            try {
+                dispatch(setLoading(true));  // Set loading state
+                const response = await axios.get("http://localhost:8000/api/files", {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Use JWT token for authorization
+                    },
+                });
+
+                // Dispatch the files to Redux state
+                dispatch(setFiles(response.data.files));
+            } catch (error) {
+                const errorMessage = error.response?.data?.message || "Failed to fetch files";
+                dispatch(setError(errorMessage));
+            } finally {
+                dispatch(setLoading(false)); // Turn off loading state
+            }
+        };
+
+        fetchFiles();  // Call fetchFiles function
+    }, [dispatch]);
 
     const handleCreateFile = () => {
         setShowNameInput(true); // Show the input to name the file
