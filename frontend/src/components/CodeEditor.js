@@ -9,6 +9,7 @@ import {executeCode} from "./api";
 const CodeEditor = () => {
     const [value, setValue] = useState("");
     const [language, setLanguage] = useState("javascript");
+    const [output, setOutput] = useState(null);
     const editorRef = useRef();
     const onMount = (editor) => {
         editorRef.current = editor;
@@ -22,7 +23,7 @@ const CodeEditor = () => {
         const sourceCode = editorRef.current.getValue();
         if (!sourceCode) return;
         try {
-            const {} = executeCode(language, sourceCode);
+            const {run: result} = executeCode(language, sourceCode);
         } catch (error) {}
     };
     return (
