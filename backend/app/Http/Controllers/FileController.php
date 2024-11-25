@@ -12,8 +12,6 @@ class FileController extends Controller
 {
     function create_file(Request $request)
     {
-        $user = auth()->user();
-
         $validated = $request->validate([
             'name' => 'required|string',
             'content' => 'nullable|string',
