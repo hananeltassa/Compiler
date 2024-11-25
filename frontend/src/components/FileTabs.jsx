@@ -10,46 +10,46 @@ const FileTabs = () => {
     const files = useSelector((state) => state.file.files); 
     const currentFile = useSelector((state) => state.file.currentFile); 
     const [showInviteForm, setShowInviteForm] = useState(false);
-    const [newFileName, setNewFileName] = useState(""); 
+    const [showNameInput, setShowNameInput] = useState(false); // To toggle file name input
+    const [newFileName, setNewFileName] = useState(""); // New file name input
 
-    const handleCreateFile = async () => {
+    const handleCreateFile = () => {
+        setShowNameInput(true); // Show the input to name the file
+        setNewFileName(""); // Reset file name input
+    };
+
+    const handleSaveFileName = async () => {
         if (!newFileName.trim()) {
             dispatch(setError("File name cannot be empty."));
             return;
         }
 
-        const newFile = {
-            name: newFileName.trim(),
-            content: "", 
-        };
-
         try {
-            dispatch(setLoading(true)); 
-
-            // API call to create a new file
+            dispatch(setLoading(true));
             const response = await axios.post(
                 "http://localhost:8000/api/files",
-                newFile,
+                { name: newFileName.trim(), content: "" },
                 {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`
+                        Authorization: `Bearer ${localStorage.getItem("token")}`,
                     },
                 }
             );
 
-            dispatch(addFile(response.data.file));
-            dispatch(setCurrentFile(response.data.file.name)); 
-            setNewFileName("");
+            const savedFile = response.data.file;
+            dispatch(addFile(savedFile));
+            dispatch(setCurrentFile(savedFile.name));
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Failed to create file";
-            dispatch(setError(errorMessage)); 
+            const errorMessage = error.response?.data?.message || "Failed to save file";
+            dispatch(setError(errorMessage));
         } finally {
-            dispatch(setLoading(false)); 
+            setShowNameInput(false); // Hide the input
+            dispatch(setLoading(false));
         }
     };
 
     const handleFileSelect = (fileName) => {
-        dispatch(setCurrentFile(fileName));
+        dispatch(setCurrentFile(fileName)); // Set the clicked file as the current file
     };
 
     const handleInvite = () => {
@@ -62,17 +62,25 @@ const FileTabs = () => {
 
     return (
         <div className={styles.sidebarContainer}>
-            {/* Input field to name the new file */}
-            <div className={styles.newFileContainer}>
-                <input
-                    type="text"
-                    value={newFileName}
-                    onChange={(e) => setNewFileName(e.target.value)}
-                    placeholder="Enter file name"
-                    className={styles.newFileInput}
-                />
-                <button onClick={handleCreateFile} className={styles.newFileBtn}>Create</button>
-            </div>
+            {/* Button to create a new file */}
+            <button onClick={handleCreateFile} className={styles.newFileBtn}>+</button>
+
+            {/* File name input */}
+            {showNameInput && (
+                <div className={styles.nameInputContainer}>
+                    <input
+                        type="text"
+                        value={newFileName}
+                        onChange={(e) => setNewFileName(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveFileName();
+                        }}
+                        placeholder="Enter file name..."
+                        autoFocus
+                        className={styles.fileNameInput}
+                    />
+                </div>
+            )}
 
             {/* Display the list of files */}
             <div className={styles.fileTabs}>
