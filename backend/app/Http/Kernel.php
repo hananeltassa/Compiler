@@ -21,6 +21,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\CheckForMaintenanceMode::class,
         \Illuminate\Foundation\Http\Middleware\ValidateSignature::class,
         \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        \Illuminate\Http\Middleware\HandleCors::class,
     ];
 
     /**
@@ -43,6 +44,7 @@ class Kernel extends HttpKernel
             \App\Http\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \Illuminate\Http\Middleware\HandleCors::class, 
             \App\Http\Middleware\JWTAuthMiddleware::class, // Add JWT middleware here
         ],
     ];
