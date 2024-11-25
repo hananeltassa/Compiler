@@ -26,4 +26,9 @@ class Collaborator extends Model
     {
         return $this->belongsTo(File::class);
     }
+
+    public function collaborators()
+    {
+        return $this->belongsToMany(User::class, 'collaborators');
+    }
 }
