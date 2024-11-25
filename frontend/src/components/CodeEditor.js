@@ -26,7 +26,6 @@ const CodeEditor = () => {
             const {run} = await executeCode(language, sourceCode);
             console.log(run);
             setOutput(run.output);
-            console.log(output);
         } catch (error) {}
     };
     return (
@@ -47,8 +46,7 @@ const CodeEditor = () => {
                     onMount={onMount}
                     defaultValue={CODE_SNIPPETS[language]}
                 />
-
-                <OutPut />
+                <OutPut output={output} />
             </div>
             <button onClick={runCode}>Run Code</button>
         </div>
