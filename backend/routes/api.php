@@ -13,7 +13,7 @@ Route::post('login', [JWTAuthController::class, 'login'])->name('login');
 Route::get('invitations/accept/{id}', [InvitationController::class, 'acceptInvitation'])->name('invitation.accept');
 Route::get('/invitations/deny/{id}', [InvitationController::class, 'denyInvitation'])->name('invitation.deny');
 
-Route::middleware('auth:api')->group(function () {
+Route::middleware('jwt.auth')->group(function () {
     // Authenticated routes
     Route::get('user', [JWTAuthController::class, 'getUser']); 
     Route::post('logout', [JWTAuthController::class, 'logout']);
