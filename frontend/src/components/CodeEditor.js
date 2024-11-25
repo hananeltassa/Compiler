@@ -17,6 +17,7 @@ const CodeEditor = () => {
         setLanguage(lang);
         setValue(CODE_SNIPPETS[lang]);
     };
+    const runCode = async () => {};
     return (
         <div>
             <h3 style={{display: "flex", alignitems: "flex-start"}}> Languages </h3>
@@ -35,8 +36,10 @@ const CodeEditor = () => {
                     onMount={onMount}
                     defaultValue={CODE_SNIPPETS[language]}
                 />
+
                 <OutPut />
             </div>
+            <button>Run Code</button>
         </div>
     );
 };
