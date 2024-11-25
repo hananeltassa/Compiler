@@ -6,6 +6,7 @@ use App\Http\Controllers\JWTAuthController;
 use App\Http\Controllers\CollaboratorController;
 use App\Http\Controllers\FileController;
 use App\Http\Controllers\InvitationController;
+use App\Http\Controllers\CodeAnalysisController;
 
 Route::post('register', [JWTAuthController::class, 'register']);
 Route::post('login', [JWTAuthController::class, 'login'])->name('login');
@@ -17,6 +18,8 @@ Route::middleware('jwt.auth')->group(function () {
     // Authenticated routes
     Route::get('user', [JWTAuthController::class, 'getUser']); 
     Route::post('logout', [JWTAuthController::class, 'logout']);
+
+    Route::post('/analyze', [CodeAnalysisController::class, 'analyze']);
 
     Route::prefix('files')->group(function () {
         Route::post('/', [FileController::class, 'create_file']);  
