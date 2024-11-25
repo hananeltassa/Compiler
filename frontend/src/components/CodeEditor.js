@@ -11,6 +11,8 @@ const CodeEditor = () => {
     const [language, setLanguage] = useState("javascript");
     const [output, setOutput] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
     const editorRef = useRef();
     const onMount = (editor) => {
         editorRef.current = editor;
