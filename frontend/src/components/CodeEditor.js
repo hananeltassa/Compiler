@@ -27,8 +27,11 @@ const CodeEditor = () => {
         if (!sourceCode) return;
         try {
             const {run} = await executeCode(language, sourceCode);
+            console.log(run);
             setOutput(run.output.split("\n"));
-        } catch (error) {}
+        } catch (error) {
+            //setError(run.stderr);
+        }
     };
     return (
         <div>
