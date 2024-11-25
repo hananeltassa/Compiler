@@ -23,7 +23,10 @@ const CodeEditor = () => {
         const sourceCode = editorRef.current.getValue();
         if (!sourceCode) return;
         try {
-            const {run: result} = executeCode(language, sourceCode);
+            const {run} = await executeCode(language, sourceCode);
+            console.log(run);
+            setOutput(run.output);
+            console.log(output);
         } catch (error) {}
     };
     return (
