@@ -12,7 +12,7 @@ class FileController extends Controller
 {
     function create_file(Request $request)
     {
-        $user = auth()->user();
+        $user = JWTAuth::parseToken()->authenticate();
 
         $validated = $request->validate([
             'name' => 'required|string',
@@ -23,9 +23,12 @@ class FileController extends Controller
 
         Storage::disk('public')->put($path, $validated['content'] ?? '');
 
+        $fileUrl = url('storage/' . $path); 
+
+
         $file = File::create([
             'name' => $validated['name'],
-            'path' => $path,
+            'path' => $fileUrl,  
             'user_id' => $user->id,
         ]);
 

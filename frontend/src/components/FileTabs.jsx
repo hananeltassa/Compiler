@@ -13,28 +13,27 @@ const FileTabs = () => {
     const [showNameInput, setShowNameInput] = useState(false); 
     const [newFileName, setNewFileName] = useState(""); 
 
-    // Fetch files when the component mounts
+
     useEffect(() => {
         const fetchFiles = async () => {
             try {
-                dispatch(setLoading(true));  // Set loading state
+                dispatch(setLoading(true));  
                 const response = await axios.get("http://localhost:8000/api/files", {
                     headers: {
                         Authorization: `Bearer ${localStorage.getItem("token")}`, 
                     },
                 });
 
-                // Dispatch the files to Redux state
                 dispatch(setFiles(response.data.files));
             } catch (error) {
                 const errorMessage = error.response?.data?.message || "Failed to fetch files";
                 dispatch(setError(errorMessage));
             } finally {
-                dispatch(setLoading(false)); // Turn off loading state
+                dispatch(setLoading(false)); 
             }
         };
 
-        fetchFiles();  // Call fetchFiles function
+        fetchFiles();  
     }, [dispatch]);
 
     const handleCreateFile = () => {
