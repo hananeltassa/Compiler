@@ -1,7 +1,4 @@
-.box {
-    min-height: 100vh;
-    background-color: #0f0a19;
-}
+
 body {
     color: white;
     background-color: #0f0a19;
@@ -10,7 +7,7 @@ body {
 
 .container {
     display: flex; 
-    height: 100vh;
+    height: 95vh;
 }
 
 /* Sidebar styling */
@@ -26,7 +23,7 @@ body {
 
 .editorContainer {
     flex-grow: 1; 
-    padding: 20px;
+    padding-left: 10px;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;

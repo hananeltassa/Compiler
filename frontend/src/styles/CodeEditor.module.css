@@ -1,22 +1,83 @@
-/* Editor Container */
+/* Container for the entire editor section */
 .editorContainer {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    align-items: stretch;
 }
 
-/* Editor component styles */
+/* Styling for the languages header */
+.languageHeader {
+    margin-bottom: 10px;
+    font-size: 1.5rem;
+}
+
+/* Flex container for dropdown and run button */
+.controlsContainer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 15px;
+    width: 100%;
+}
+
+/* Run button styling */
+.runButton {
+    padding: 10px;
+    max-width: 100px;
+    font-size: 0.9rem;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-left: auto;
+}
+
+.dropdownButton {
+    flex-grow: 1; 
+}
+
+.runButton:hover {
+    background-color: #0056b3;
+}
+
+/* Disabled state for the run button */
+.runButton:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+/* Editor container layout */
+.editorLayout {
+    display: flex;
+    flex-direction: row; 
+    margin-top: 10px;
+}
+
+/* Monaco editor styling */
 .editor {
-    flex-grow: 2; 
+    flex-grow: 2;
+    height: 76vh;
     background-color: #1e1e1e;
 }
 
 /* Output styling */
 .outputContainer {
-    margin-top: 20px;
-    background-color: #f4f4f4;
+    flex-grow: 1;
     padding: 10px;
-    min-height: 200px; 
+    background-color: #f4f4f4;
+    min-height: 200px;
     border: 1px solid #ccc;
     border-radius: 5px;
+}
+
+/* Loading message */
+.loadingMessage {
+    color: #007bff;
+}
+
+/* Error message */
+.errorMessage {
+    color: red;
 }
