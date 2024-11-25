@@ -10,27 +10,23 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 
 class FileController extends Controller
 {
-    function create_file(Request $request){
-        // validating request data
+    function create_file(Request $request)
+    {
+        $user = auth()->user();
+
         $validated = $request->validate([
             'name' => 'required|string',
-            'content' => 'nullable|string',   
+            'content' => 'nullable|string',
         ]);
 
-        // getting authenticated user from JWT token
-        $user = JWTAuth::parseToken()->authenticate();
+        $path = 'files/' . $validated['name'];
 
-        // generating a unique file path using uniqid()
-        $path = 'files/' . uniqid() . '_' . $validated['name'];
-
-        // saving in public storage, if empty save empty file
         Storage::disk('public')->put($path, $validated['content'] ?? '');
 
-        // creating a new file
         $file = File::create([
             'name' => $validated['name'],
             'path' => $path,
-            'user_id' => $user->id, 
+            'user_id' => $user->id,
         ]);
 
         return response()->json([
@@ -38,6 +34,7 @@ class FileController extends Controller
             "file" => $file
         ]);
     }
+
 
     // fetching all files
     public function fetch_all_files(){

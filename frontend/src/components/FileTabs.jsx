@@ -7,11 +7,11 @@ import InviteUserForm from "./InviteUserForm";
 
 const FileTabs = () => {
     const dispatch = useDispatch();
-    const files = useSelector((state) => state.file.files);  // Get files from Redux state
+    const files = useSelector((state) => state.file.files);  
     const currentFile = useSelector((state) => state.file.currentFile); 
     const [showInviteForm, setShowInviteForm] = useState(false);
-    const [showNameInput, setShowNameInput] = useState(false); // To toggle file name input
-    const [newFileName, setNewFileName] = useState(""); // New file name input
+    const [showNameInput, setShowNameInput] = useState(false); 
+    const [newFileName, setNewFileName] = useState(""); 
 
     // Fetch files when the component mounts
     useEffect(() => {
@@ -20,7 +20,7 @@ const FileTabs = () => {
                 dispatch(setLoading(true));  // Set loading state
                 const response = await axios.get("http://localhost:8000/api/files", {
                     headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`, // Use JWT token for authorization
+                        Authorization: `Bearer ${localStorage.getItem("token")}`, 
                     },
                 });
 
