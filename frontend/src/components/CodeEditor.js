@@ -4,6 +4,7 @@ import DropdownButton from "./DropDown";
 import {CODE_SNIPPETS} from "../constant";
 import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
+import {source} from "framer-motion/client";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
@@ -17,7 +18,10 @@ const CodeEditor = () => {
         setLanguage(lang);
         setValue(CODE_SNIPPETS[lang]);
     };
-    const runCode = async () => {};
+    const runCode = async () => {
+        const sourceCode = editorRef.current.getValue();
+        console.log(sourceCode);
+    };
     return (
         <div>
             <h3 style={{display: "flex", alignitems: "flex-start"}}> Languages </h3>
@@ -39,7 +43,7 @@ const CodeEditor = () => {
 
                 <OutPut />
             </div>
-            <button>Run Code</button>
+            <button onClick={runCode}>Run Code</button>
         </div>
     );
 };
