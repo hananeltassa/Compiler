@@ -15,6 +15,7 @@ const Compiler = () => {
       language: "javascript",
     },
   ]);
+
   const [channels, setChannels] = useState([]);
 
   // Create a new file
@@ -33,33 +34,6 @@ const Compiler = () => {
     setSelectedFile(fileName);
   };
 
-  useEffect(() => {
-    // Fetch files on mount
-    const fetchFiles = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("Token:", token);  
-        const response = await axios.get("http://localhost:8000/api/files", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setFiles(
-          response.data.files.map((file) => ({
-            id: file.id,
-            name: file.name,
-            content: "",
-            language: "javascript",
-          }))
-        );
-        setSelectedFile(response.data.files[0]?.id || null);
-      } catch (error) {
-        console.error("Error fetching files:", error);
-      }
-    };
-
-    fetchFiles();
-  }, []); // Fetch files once on mount
-
-  // Initialize Pusher after files are fetched
   useEffect(() => {
     if (files.length === 0) return;
 
