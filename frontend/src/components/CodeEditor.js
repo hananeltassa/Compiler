@@ -4,10 +4,15 @@ import DropdownButton from "./DropDown";
 import {CODE_SNIPPETS} from "../constant";
 import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
+import {executeCode} from "./api";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
     const [language, setLanguage] = useState("javascript");
+    const [output, setOutput] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+
     const editorRef = useRef();
     const onMount = (editor) => {
         editorRef.current = editor;
@@ -16,6 +21,14 @@ const CodeEditor = () => {
     const handleLanguageSelect = (lang) => {
         setLanguage(lang);
         setValue(CODE_SNIPPETS[lang]);
+    };
+    const runCode = async () => {
+        const sourceCode = editorRef.current.getValue();
+        if (!sourceCode) return;
+        try {
+            const {run} = await executeCode(language, sourceCode);
+            setOutput(run.output.split("\n"));
+        } catch (error) {}
     };
     return (
         <div>
@@ -35,8 +48,9 @@ const CodeEditor = () => {
                     onMount={onMount}
                     defaultValue={CODE_SNIPPETS[language]}
                 />
-                <OutPut />
+                <OutPut output={output} />
             </div>
+            <button onClick={runCode}>Run Code</button>
         </div>
     );
 };
