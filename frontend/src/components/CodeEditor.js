@@ -4,7 +4,7 @@ import DropdownButton from "./DropDown";
 import {CODE_SNIPPETS} from "../constant";
 import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
-import {source} from "framer-motion/client";
+import {executeCode} from "./api";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
@@ -22,6 +22,7 @@ const CodeEditor = () => {
         const sourceCode = editorRef.current.getValue();
         if (!sourceCode) return;
         try {
+            const {} = executeCode(language, sourceCode);
         } catch (error) {}
     };
     return (
