@@ -20,7 +20,9 @@ const CodeEditor = () => {
     };
     const runCode = async () => {
         const sourceCode = editorRef.current.getValue();
-        console.log(sourceCode);
+        if (!sourceCode) return;
+        try {
+        } catch (error) {}
     };
     return (
         <div>
