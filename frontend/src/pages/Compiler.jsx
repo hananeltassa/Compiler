@@ -3,8 +3,6 @@ import CodeEditor from "../components/CodeEditor";
 import FileTabs from "../components/FileTabs";
 import { CODE_SNIPPETS } from "../constant";
 import styles from "../styles/compiler.module.css";
-import Pusher from "pusher-js";
-import axios from "axios";
 
 const Compiler = () => {
   const [selectedFile, setSelectedFile] = useState("newFile");
@@ -33,42 +31,6 @@ const Compiler = () => {
   const handleFileSelect = (fileName) => {
     setSelectedFile(fileName);
   };
-
-  useEffect(() => {
-    if (files.length === 0) return;
-
-    const pusher = new Pusher("d147720fc37b1e8976ee", {
-      cluster: "ap2",
-    });
-
-    const newChannels = [];
-
-    // Subscribe to Pusher channels for all files
-    files.forEach((file) => {
-      const channel = pusher.subscribe(`file-${file.id}`);
-      newChannels.push(channel);
-
-      // Bind to 'file-updated' event
-      channel.bind("file-updated", (data) => {
-        setFiles((prevFiles) =>
-          prevFiles.map((f) =>
-            f.id === file.id ? { ...f, content: data.content } : f
-          )
-        );
-      });
-    });
-
-    // Save the channels state for cleanup
-    setChannels(newChannels);
-
-    // Cleanup on unmount or when files change
-    return () => {
-      newChannels.forEach((channel) => {
-        channel.unsubscribe();
-      });
-      pusher.disconnect();
-    };
-  }, [files]); // Only re-run when files change
 
   return (
     <div className={styles.container}>
