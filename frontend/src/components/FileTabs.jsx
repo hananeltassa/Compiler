@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import React, {useState, useEffect} from "react";
+import {useDispatch, useSelector} from "react-redux";
 import axios from "axios";
 import styles from "../styles/FileTabs.module.css";
 import InviteUserForm from "./InviteUserForm";
-import { useFileContent } from "../contexts/FileContentContext";
-import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
+import {useFileContent} from "../contexts/FileContentContext";
+import {addFile, setCurrentFile, setError, setLoading, setFiles} from "../redux/features/fileSlice";
 import InvitationsModal from "./InvitationsModal";
 
 const languageMap = {
@@ -25,7 +25,7 @@ const fetchFiles = async (dispatch) => {
     dispatch(setLoading(true));
     try {
         const response = await axios.get("http://localhost:8000/api/files", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
         });
         dispatch(setFiles(response.data.files));
     } catch (error) {
@@ -38,7 +38,7 @@ const fetchFiles = async (dispatch) => {
 const fetchFileContent = async (fileName, setFileContent, setLanguage, dispatch) => {
     try {
         const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+            headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
         });
         setFileContent(response.data.content);
         setLanguage(detectLanguage(fileName));
@@ -52,7 +52,7 @@ const FileTabs = () => {
     const dispatch = useDispatch();
     const files = useSelector((state) => state.file.files);
     const currentFile = useSelector((state) => state.file.currentFile);
-    const { setFileContent, setLanguage } = useFileContent();
+    const {setFileContent, setLanguage} = useFileContent();
 
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showFileInputs, setShowFileInputs] = useState(false);
@@ -86,8 +86,8 @@ const FileTabs = () => {
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/files",
-                { name: newFileName.trim(), language: detectedLanguage, content: "" },
-                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+                {name: newFileName.trim(), language: detectedLanguage, content: ""},
+                {headers: {Authorization: `Bearer ${localStorage.getItem("token")}`}}
             );
             dispatch(addFile(response.data.file));
             setShowFileInputs(false);
@@ -157,9 +157,7 @@ const FileTabs = () => {
 
             {showInviteForm && <InviteUserForm fileId={currentFile} onClose={() => setShowInviteForm(false)} />}
 
-            {showInvitationsModal && (
-                <InvitationsModal fileId={currentFile} onClose={handleCloseModal} />
-            )}
+            {showInvitationsModal && <InvitationsModal fileId={currentFile} onClose={handleCloseModal} />}
         </div>
     );
 };
