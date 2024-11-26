@@ -12,10 +12,8 @@ const InviteUserForm = ({ fileId, onClose }) => {
     // Access the file list from the Redux store
     const files = useSelector((state) => state.file.files);
     
-    // Find the file based on its name and get the file ID
     const file = files.find((f) => f.name === fileId);
-    const fileIdForRequest = file ? file.id : null;  // Ensure the ID is correct and exists
-
+    const fileIdForRequest = file ? file.id : null;  
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
