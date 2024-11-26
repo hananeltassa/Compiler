@@ -3,6 +3,8 @@
   display: flex;
   flex-direction: column;
   align-items: stretch;
+  height: 100vh;
+  overflow-y: hidden;
 }
 
 /* Styling for the languages header */
@@ -16,7 +18,7 @@
 .bttnsContainer {
   display: flex;
   flex-direction: row;
-  gap: 5px;
+  gap: 10px;
 }
 
 /* Flex container for dropdown and run button */
@@ -27,7 +29,7 @@
   width: 100%;
 }
 
-/* Run button styling */
+.analyisBttn,
 .runButton {
   padding: 10px;
   width: 135px;
@@ -44,6 +46,7 @@
   flex-grow: 1;
 }
 
+.analyisBttn:hover,
 .runButton:hover {
   background-color: #0056b3;
 }
@@ -59,12 +62,13 @@
   display: flex;
   flex-direction: row;
   margin-top: 10px;
+  flex-grow: 1;
 }
 
 /* Monaco editor styling */
 .editor {
   flex-grow: 2;
-  height: 76vh;
+  height: 100%;
   background-color: #1e1e1e;
 }
 

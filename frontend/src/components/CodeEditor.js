@@ -6,6 +6,7 @@ import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
 import { executeCode } from "./api";
 import axios from "axios";
+import Modal from "../components/Modal";
 
 const CodeEditor = () => {
   const [value, setValue] = useState("");
@@ -13,6 +14,7 @@ const CodeEditor = () => {
   const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [analysis, setAnalysis] = useState("");
 
   const editorRef = useRef();
   const onMount = (editor) => {
@@ -51,11 +53,20 @@ const CodeEditor = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:8000/api/analyze", {
-        code: sourceCode,
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/analyze",
+        {
+          code: sourceCode,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
 
-      alert("Code Analysis:\n" + response.data.analysis);
+      setAnalysis(response.data.analysis);
+      //alert("Code Analysis:\n" + response.data.analysis);
     } catch (error) {
       console.error("Error analyzing code:", error);
       alert("Failed to analyze code. Please try again.");
@@ -81,12 +92,8 @@ const CodeEditor = () => {
           >
             {loading ? "Running..." : "Run Code"}
           </button>
-          <button
-            className={styles.runButton}
-            onClick={handleAnalyzeCode}
-            disabled={loading}
-          >
-            {loading ? "Analyzing..." : "Analyze Code"}
+          <button className={styles.analyisBttn} onClick={handleAnalyzeCode}>
+            Analyze Code
           </button>
         </div>
       </div>
@@ -102,7 +109,9 @@ const CodeEditor = () => {
           defaultValue={CODE_SNIPPETS[language]}
         />
         <OutPut output={output} />
+        <Modal analysis={analysis} />
       </div>
+
       {loading && <p className={styles.loadingMessage}>Loading...</p>}
       {error && <p className={styles.errorMessage}>{error}</p>}
     </div>
