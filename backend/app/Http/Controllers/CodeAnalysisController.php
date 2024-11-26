@@ -20,13 +20,19 @@ class CodeAnalysisController extends Controller
             ['role' => 'user', 'content' => 'Analyze the following code and provide suggestions: ' . $request->code],
         ];
 
-        $response = $openai->chat()->create([
-            'model' => 'gpt-3.5-turbo-0125',
-            'messages' => $messages,
-        ]);
+        try {
+            $response = $openai->chat()->create([
+                'model' => 'gpt-3.5-turbo', 
+                'messages' => $messages,
+            ]);
 
-        return response()->json([
-            'analysis' => $response->choices[0]->message->content, 
-        ]);
+            return response()->json([
+                'analysis' => $response->choices[0]->message->content,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'Failed to analyze code: ' . $e->getMessage(),
+            ], 500);
+        }
     }
 }
