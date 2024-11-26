@@ -1,41 +1,45 @@
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-    addFile,
-    setCurrentFile,
-    setError,
-    setLoading,
-    setFiles,
-} from "../redux/features/fileSlice";
 import axios from "axios";
 import styles from "../styles/FileTabs.module.css";
 import InviteUserForm from "./InviteUserForm";
 import { useFileContent } from "../contexts/FileContentContext";
+import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
 
 const FileTabs = () => {
     const dispatch = useDispatch();
     const files = useSelector((state) => state.file.files);
     const currentFile = useSelector((state) => state.file.currentFile);
-    const { setFileContent, setLanguage } = useFileContent(); // Use the context to manage file content and language
+    const { setFileContent, setLanguage } = useFileContent();
+
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showFileInputs, setShowFileInputs] = useState(false);
     const [newFileName, setNewFileName] = useState("");
-    const [newFileLanguage, setNewFileLanguage] = useState("javascript");
+
+    const languageMap = {
+        js: "javascript",
+        php: "php",
+        html: "html",
+        css: "css",
+        py: "python",
+        java: "java",
+    };
+
+    const detectLanguage = (fileName) => {
+        const extension = fileName.split(".").pop().toLowerCase();
+        return languageMap[extension] || "text";
+    };
 
     useEffect(() => {
         const fetchFiles = async () => {
+            dispatch(setLoading(true));
             try {
-                dispatch(setLoading(true));
                 const response = await axios.get("http://localhost:8000/api/files", {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
                 dispatch(setFiles(response.data.files));
             } catch (error) {
-                const errorMessage =
-                    error.response?.data?.message || "Failed to fetch files";
-                dispatch(setError(errorMessage));
+                dispatch(setError(error.response?.data?.message || "Failed to fetch files"));
             } finally {
                 dispatch(setLoading(false));
             }
@@ -47,42 +51,20 @@ const FileTabs = () => {
     const handleFileSelect = async (fileName) => {
         try {
             const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
-                headers: {
-                    Authorization: `Bearer ${localStorage.getItem("auth_token")}`, // Use your actual token
-                },
+                headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` },
             });
-    
             const fileContent = response.data.content;
-            console.log("File content:", fileContent);
-            setFileContent(fileContent); 
-
-            const detectedLanguage = detectLanguage(fileName);
-            setLanguage(detectedLanguage);  // Set the language in the context
-            dispatch(setCurrentFile(fileName));  // Set the current file in Redux state
+            setFileContent(fileContent);
+            setLanguage(detectLanguage(fileName));
+            dispatch(setCurrentFile(fileName));
         } catch (error) {
-            console.error("Error fetching file content:", error);
             dispatch(setError("Failed to load file content"));
         }
-    };
-    
-    const detectLanguage = (fileName) => {
-        const extension = fileName.split('.').pop();
-        const languageMap = {
-            js: 'javascript',
-            php: 'php',
-            html: 'html',
-            css: 'css',
-            py: 'python',
-            java: 'java',
-        };
-    
-        return languageMap[extension] || 'text'; 
     };
 
     const handleCreateFile = () => {
         setShowFileInputs(true);
-        setNewFileName("");
-        setNewFileLanguage("javascript");
+        setNewFileName(""); // Reset file name
     };
 
     const handleSaveFile = async () => {
@@ -91,48 +73,34 @@ const FileTabs = () => {
             return;
         }
 
+        const detectedLanguage = detectLanguage(newFileName);
+
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/files",
                 {
                     name: newFileName.trim(),
-                    language: newFileLanguage,
-                    content: "", // Default content for a new file
+                    language: detectedLanguage,
+                    content: "",
                 },
-                {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem("token")}`,
-                    },
-                }
+                { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
 
-            dispatch(addFile(response.data.file)); // Add the new file to Redux state
+            dispatch(addFile(response.data.file));
             setShowFileInputs(false);
         } catch (error) {
             dispatch(setError("Failed to create file"));
         }
     };
 
-    const handleInvite = () => {
-        setShowInviteForm(true);
-    };
-
-    const handleCloseInviteForm = () => {
-        setShowInviteForm(false);
-    };
-
     return (
         <div className={styles.sidebarContainer}>
-            {/* Button to create a new file */}
-            <button
-                onClick={handleCreateFile}
-                className={styles.newFileBtn}
-                title="Create New File"
-            >
+            {/* New File Button */}
+            <button onClick={handleCreateFile} className={styles.newFileBtn} title="Create New File">
                 +
             </button>
 
-            {/* Inputs for new file details */}
+            {/* New File Inputs */}
             {showFileInputs && (
                 <div className={styles.fileInputContainer}>
                     <input
@@ -143,36 +111,18 @@ const FileTabs = () => {
                         autoFocus
                         className={styles.fileNameInput}
                     />
-                    <select
-                        value={newFileLanguage}
-                        onChange={(e) => setNewFileLanguage(e.target.value)}
-                        className={styles.fileLanguageSelect}
-                    >
-                        <option value="javascript">JavaScript</option>
-                        <option value="python">Python</option>
-                        <option value="php">PHP</option>
-                        <option value="java">Java</option>
-                        {/* Add other languages as needed */}
-                    </select>
-                    <button
-                        onClick={handleSaveFile}
-                        className={styles.saveFileBtn}
-                    >
+                    <button onClick={handleSaveFile} className={styles.saveFileBtn}>
                         Save
                     </button>
                 </div>
             )}
 
-            {/* Display the list of files */}
+            {/* File Tabs */}
             <div className={styles.fileTabs}>
                 {files.map((file) => (
                     <div
                         key={file.name}
-                        className={
-                            currentFile === file.name
-                                ? styles.selectedTab
-                                : styles.tab
-                        }
+                        className={currentFile === file.name ? styles.selectedTab : styles.tab}
                         onClick={() => handleFileSelect(file.name)}
                     >
                         {file.name}
@@ -180,20 +130,15 @@ const FileTabs = () => {
                 ))}
             </div>
 
-            {/* File actions */}
+            {/* File Actions */}
             <div className={styles.fileActions}>
-                <button onClick={handleInvite} className={styles.inviteBtn}>
+                <button onClick={() => setShowInviteForm(true)} className={styles.inviteBtn}>
                     Invite
                 </button>
             </div>
 
-            {/* Invite user form */}
-            {showInviteForm && (
-                <InviteUserForm
-                    fileId={currentFile}
-                    onClose={handleCloseInviteForm}
-                />
-            )}
+            {/* Invite User Form */}
+            {showInviteForm && <InviteUserForm fileId={currentFile} onClose={() => setShowInviteForm(false)} />}
         </div>
     );
 };
