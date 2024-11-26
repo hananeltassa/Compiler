@@ -8,7 +8,7 @@
 .newFileBtn {
     width: 100%;
     padding: 10px;
-    background-color: #4CAF50; /* Green for new file */
+    background-color: #007bff;
     border: none;
     color: white;
     font-size: 18px;
@@ -17,7 +17,7 @@
 }
 
 .newFileBtn:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
 .fileTabs {
@@ -47,7 +47,7 @@
 .inviteBtn {
     padding: 10px;
     color: white;
-    background-color: #4CAF50; 
+    background-color: #007bff; 
     border: none;
     cursor: pointer;
     font-size: 14px;
@@ -55,7 +55,7 @@
 
 .saveFileBtn:hover,
 .inviteBtn:hover {
-    background-color: #45a049;
+    background-color: #0056b3;
 }
 
 .nameInputContainer {
