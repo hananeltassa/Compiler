@@ -11,3 +11,6 @@ Route::get('/test-broadcast', function () {
 Route::get('/', function () {
     return view('welcome');
 });
+
+
+Route::middleware('auth:sanctum')->get('/api/files/{fileName}', [FileController::class, 'serveFile']);

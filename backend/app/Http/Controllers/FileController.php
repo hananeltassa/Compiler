@@ -42,12 +42,24 @@ class FileController extends Controller
         ]);
     }
 
-    // Fetching all files
+    public function serveFile($fileName)
+    {
+        $filePath = "files/{$fileName}";
+
+        // Check if the file exists
+        if (!Storage::exists($filePath)) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+
+        // Serve the file content
+        return response()->file(storage_path("app/{$filePath}"));
+    }
+
+
     public function fetch_all_files()
     {
         $user = JWTAuth::parseToken()->authenticate();
     
-        // Fetch all files belonging to the user
         $files = File::where('user_id', $user->id)->get();
 
         return response()->json([

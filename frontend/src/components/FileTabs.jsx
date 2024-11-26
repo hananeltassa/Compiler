@@ -46,23 +46,40 @@ const FileTabs = () => {
     }, [dispatch]);
 
     const handleFileSelect = async (fileName) => {
-        dispatch(setCurrentFile(fileName));
-
         try {
             const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
                 headers: {
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
+                    Authorization: `Bearer ${localStorage.getItem("auth_token")}`, // Use your actual token
                 },
             });
-
+    
+            // Extract content from response
             const fileContent = response.data.content;
-            const fileLanguage = response.data.language;
-            setFileContent(fileContent); // Update content via context
-            setLanguage(fileLanguage); // Update language via context
+            console.log("File content:", fileContent);
+    
+            // Update your state or context with the file content
+            setFileContent(fileContent); // Replace with your state function
         } catch (error) {
+            console.error("Error fetching file content:", error);
             dispatch(setError("Failed to load file content"));
         }
     };
+    
+    const detectLanguage = (fileName) => {
+        const extension = fileName.split('.').pop();
+        const languageMap = {
+            js: 'javascript',
+            php: 'php',
+            html: 'html',
+            css: 'css',
+            py: 'python',
+            java: 'java',
+        };
+    
+        return languageMap[extension] || 'text';
+    };
+    
+    
 
     const handleCreateFile = () => {
         setShowFileInputs(true);
