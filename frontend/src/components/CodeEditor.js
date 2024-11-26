@@ -1,30 +1,37 @@
-import { Editor } from "@monaco-editor/react";
-import { useRef, useState } from "react";
-import DropdownButton from "./DropDown";
-import { CODE_SNIPPETS } from "../constant";
-import styles from "../styles/CodeEditor.module.css";
-import OutPut from "./OutPut";
-import { executeCode } from "./api";
 import axios from "axios";
-import Modal from "../components/Modal";
+import Modal from './Modal'; 
+import { Editor } from "@monaco-editor/react";
+import { CODE_SNIPPETS } from "../constant";
+import { useRef, useState, useEffect } from "react";
+import styles from "../styles/CodeEditor.module.css";
+import { useFileContent } from "../contexts/FileContentContext";
+import DropdownButton from "./DropDown";
+import { executeCode } from "./api";
+import OutPut from "./OutPut";
+
 
 const CodeEditor = () => {
-  const [value, setValue] = useState("");
-  const [language, setLanguage] = useState("javascript");
+
+  const { fileContent, language, setLanguage } = useFileContent(); 
+  const [value, setValue] = useState(fileContent || "");
   const [output, setOutput] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [analysis, setAnalysis] = useState("");
-
   const editorRef = useRef();
+
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
   };
 
+  useEffect(() => {
+    setValue(fileContent);
+  }, [fileContent]);
+
   const handleLanguageSelect = (lang) => {
-    setLanguage(lang);
-    setValue(CODE_SNIPPETS[lang]);
+    setLanguage(lang); 
+    setValue(CODE_SNIPPETS[lang]); 
   };
 
   const runCode = async () => {
@@ -37,6 +44,7 @@ const CodeEditor = () => {
     setError("");
     try {
       const { run } = await executeCode(language, sourceCode);
+      console.log(language);
       setOutput(run.output.split("\n"));
     } catch (err) {
       setError("An error occurred while running the code.");
@@ -117,6 +125,5 @@ const CodeEditor = () => {
     </div>
   );
 };
-
 
 export default CodeEditor;

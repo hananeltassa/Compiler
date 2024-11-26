@@ -46,7 +46,7 @@ class InvitationController extends Controller
         if (!$invitation) {
             return response()->json(['message' => 'Failed to create invitation.'], 500);
         }
-
+        \Log::info('Sending invitation to: ' . $validated['invited_email']);
         Mail::to($validated['invited_email'])->send(new InvitationMail($invitation));
 
         return response()->json(['message' => 'Invitation sent successfully!', 'invitation' => $invitation], 201);
@@ -92,6 +92,18 @@ class InvitationController extends Controller
         } catch (\Exception $e) {
             return response()->json(['message' => 'Failed to process the request.'], 500);
         }
+    }
+
+    public function getCollaborators($fileId)
+    {
+        $collaborators = Invitation::where('file_id', $fileId)
+            ->whereIn('status', ['accepted', 'pending','declined'])
+            ->get();
+    
+        if ($collaborators->isEmpty()) {
+            return response()->json(['message' => 'No collaborators found for this file.'], 404);
+        }
+        return response()->json($collaborators);
     }
     
 
