@@ -6,6 +6,61 @@ import InviteUserForm from "./InviteUserForm";
 import { useFileContent } from "../contexts/FileContentContext";
 import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
 
+const languageMap = {
+    js: "javascript",
+    php: "php",
+    html: "html",
+    css: "css",
+    py: "python",
+    java: "java",
+};
+
+const detectLanguage = (fileName) => {
+    const extension = fileName.split(".").pop().toLowerCase();
+    return languageMap[extension] || "text";
+};
+
+
+const fetchFiles = async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+        const response = await axios.get("http://localhost:8000/api/files", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        dispatch(setFiles(response.data.files));
+    } catch (error) {
+        dispatch(setError(error.response?.data?.message || "Failed to fetch files"));
+    } finally {
+        dispatch(setLoading(false));
+    }
+};
+
+
+const fetchFileContent = async (fileName, setFileContent, setLanguage, dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setFileContent(response.data.content);
+        setLanguage(detectLanguage(fileName));
+        dispatch(setCurrentFile(fileName));
+    } catch (error) {
+        dispatch(setError("Failed to load file content"));
+    }
+};
+
+
+const fetchInvitations = async (fileId, setInvitations) => {
+    try {
+        const response = await axios.get(`http://localhost:8000/api/files/${fileId}/invitations`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setInvitations(response.data); 
+    } catch (error) {
+        console.error("Failed to fetch invitations", error);
+    }
+};
+
 const FileTabs = () => {
     const dispatch = useDispatch();
     const files = useSelector((state) => state.file.files);
@@ -18,56 +73,23 @@ const FileTabs = () => {
     const [showInvitationsModal, setShowInvitationsModal] = useState(false);
     const [invitations, setInvitations] = useState([]);
 
-    const languageMap = {
-        js: "javascript",
-        php: "php",
-        html: "html",
-        css: "css",
-        py: "python",
-        java: "java",
-    };
-
-    const detectLanguage = (fileName) => {
-        const extension = fileName.split(".").pop().toLowerCase();
-        return languageMap[extension] || "text";
-    };
-
+    // Fetch files when component mounts
     useEffect(() => {
-        const fetchFiles = async () => {
-            dispatch(setLoading(true));
-            try {
-                const response = await axios.get("http://localhost:8000/api/files", {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                });
-                dispatch(setFiles(response.data.files));
-            } catch (error) {
-                dispatch(setError(error.response?.data?.message || "Failed to fetch files"));
-            } finally {
-                dispatch(setLoading(false));
-            }
-        };
-
-        fetchFiles();
+        fetchFiles(dispatch);
     }, [dispatch]);
 
-    const handleFileSelect = async (fileName) => {
-        try {
-            const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            setFileContent(response.data.content);
-            setLanguage(detectLanguage(fileName));
-            dispatch(setCurrentFile(fileName));
-        } catch (error) {
-            dispatch(setError("Failed to load file content"));
-        }
+    // Handle file selection
+    const handleFileSelect = (fileName) => {
+        fetchFileContent(fileName, setFileContent, setLanguage, dispatch);
     };
 
+    // Create new file
     const handleCreateFile = () => {
         setShowFileInputs(true);
         setNewFileName("");
     };
 
+    // Save new file
     const handleSaveFile = async () => {
         if (!newFileName.trim()) {
             dispatch(setError("File name cannot be empty"));
@@ -88,15 +110,10 @@ const FileTabs = () => {
         }
     };
 
-    const fetchInvitations = async (fileId) => {
-        try {
-            const response = await axios.get(`http://localhost:8000/api/files/${fileId}/invitations`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            setInvitations(response.data); // Assuming the API returns an array of invitations
-        } catch (error) {
-            console.error("Failed to fetch invitations", error);
-        }
+    // Show invitations modal and fetch invitations
+    const handleViewInvitations = () => {
+        setShowInvitationsModal(true);
+        fetchInvitations(currentFile, setInvitations);
     };
 
     return (
@@ -143,13 +160,7 @@ const FileTabs = () => {
                 </button>
 
                 {currentFile && (
-                    <button
-                        onClick={() => {
-                            setShowInvitationsModal(true);
-                            fetchInvitations(currentFile);
-                        }}
-                        className={styles.viewInvitationsBtn}
-                    >
+                    <button onClick={handleViewInvitations} className={styles.viewInvitationsBtn}>
                         View Invitations
                     </button>
                 )}

@@ -93,6 +93,18 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Failed to process the request.'], 500);
         }
     }
+
+    public function getCollaborators($fileId)
+    {
+        $collaborators = Invitation::where('file_id', $fileId)
+            ->whereIn('status', ['accepted', 'pending'])
+            ->get();
+    
+        if ($collaborators->isEmpty()) {
+            return response()->json(['message' => 'No collaborators found for this file.'], 404);
+        }
+        return response()->json($collaborators);
+    }
     
 
 
