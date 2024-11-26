@@ -54,6 +54,8 @@ Route::middleware('jwt.auth')->group(function () {
 
     Route::prefix('invitations')->group(function () {
         Route::post('/', [InvitationController::class, 'sendInvitation']); 
+        Route::put('/', [InvitationController::class, 'changeRole']); 
+
     });
 
 });

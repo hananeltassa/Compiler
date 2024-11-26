@@ -9,6 +9,7 @@ use App\Mail\InvitationMail;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Illuminate\Support\Facades\Log;
 
 class InvitationController extends Controller
 {
@@ -46,7 +47,7 @@ class InvitationController extends Controller
         if (!$invitation) {
             return response()->json(['message' => 'Failed to create invitation.'], 500);
         }
-        \Log::info('Sending invitation to: ' . $validated['invited_email']);
+        Log::info('Sending invitation to: ' . $validated['invited_email']);
         Mail::to($validated['invited_email'])->send(new InvitationMail($invitation));
 
         return response()->json(['message' => 'Invitation sent successfully!', 'invitation' => $invitation], 201);
@@ -55,7 +56,7 @@ class InvitationController extends Controller
 
     public function acceptInvitation($id)
     {
-        \Log::info('Invitation Accepting', ['invitation_id' => $id]);
+        Log::info('Invitation Accepting', ['invitation_id' => $id]);
     
         try {
             $invitation = Invitation::findOrFail($id);
@@ -75,7 +76,7 @@ class InvitationController extends Controller
 
     public function denyInvitation($id)
     {
-        \Log::info('Invitation Denying', ['invitation_id' => $id]);
+        Log::info('Invitation Denying', ['invitation_id' => $id]);
     
         try {
             $invitation = Invitation::findOrFail($id);
@@ -93,7 +94,14 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Failed to process the request.'], 500);
         }
     }
-    
+    public function changeRole(Request $request){
+        $invitation=Invitation::where('invited_email',$request->invited_email)->where('file_id',$request->file_id)->first();
+        if (!$invitation) {
+            return response()->json(['error' => 'Invitation not found or not associated with this file'], 404);
+        }
+        $invitation->role = $invitation->role === 'editor' ? 'viewer' : 'editor';
+        $invitation->save();
+        return response()->json([$invitation->role], 200);
 
-
+    }
 }
