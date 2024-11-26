@@ -46,7 +46,7 @@ class InvitationController extends Controller
         if (!$invitation) {
             return response()->json(['message' => 'Failed to create invitation.'], 500);
         }
-
+        \Log::info('Sending invitation to: ' . $validated['invited_email']);
         Mail::to($validated['invited_email'])->send(new InvitationMail($invitation));
 
         return response()->json(['message' => 'Invitation sent successfully!', 'invitation' => $invitation], 201);

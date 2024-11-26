@@ -51,7 +51,7 @@ const FileTabs = () => {
     const handleFileSelect = async (fileName) => {
         try {
             const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("auth_token")}` },
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const fileContent = response.data.content;
             setFileContent(fileContent);
@@ -121,11 +121,11 @@ const FileTabs = () => {
             <div className={styles.fileTabs}>
                 {files.map((file) => (
                     <div
-                        key={file.name}
-                        className={currentFile === file.name ? styles.selectedTab : styles.tab}
-                        onClick={() => handleFileSelect(file.name)}
+                        key={file.id}  
+                        className={currentFile === file.name ? styles.selectedTab : styles.tab} 
+                        onClick={() => handleFileSelect(file.name)}  
                     >
-                        {file.name}
+                        {file.name}  
                     </div>
                 ))}
             </div>

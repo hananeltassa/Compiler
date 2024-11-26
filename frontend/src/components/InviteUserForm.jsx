@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import styles from "../styles/InviteUserForm.module.css";
 
 const InviteUserForm = ({ fileId, onClose }) => {
@@ -8,13 +9,26 @@ const InviteUserForm = ({ fileId, onClose }) => {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
 
+    // Access the file list from the Redux store
+    const files = useSelector((state) => state.file.files);
+    
+    // Find the file based on its name and get the file ID
+    const file = files.find((f) => f.name === fileId);
+    const fileIdForRequest = file ? file.id : null;  // Ensure the ID is correct and exists
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError("");
 
+        if (!fileIdForRequest) {
+            setError("File ID is invalid.");
+            setLoading(false);
+            return;
+        }
+
         const invitationData = {
-            file_id: fileId,
+            file_id: fileIdForRequest,  // Pass the file ID (numeric)
             invited_email: email,
             role: role,
         };
@@ -31,8 +45,8 @@ const InviteUserForm = ({ fileId, onClose }) => {
                 }
             );
 
-            alert(response.data.message);
-            onClose(); 
+            alert(response.data.message);  // Success message from the backend
+            onClose();  // Close the form after success
         } catch (err) {
             if (err.response) {
                 setError(err.response.data.message || "An error occurred.");
