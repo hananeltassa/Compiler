@@ -125,4 +125,19 @@ class FileController extends Controller
             'message' => 'File deleted successfully!',
         ]);
     }
+
+    public function update_file(Request $request)
+    {
+        $fileName = $request->fileName;
+        $content = $request->content;
+
+        Storage::disk('public')->put("files/{$fileName}", $content);
+
+        // Broadcast the code change to other users
+        broadcast(new FileUpdated($fileName, $content));
+
+        return response()->json([
+            'message' => 'File updated'
+        ]);
+    }
 }
