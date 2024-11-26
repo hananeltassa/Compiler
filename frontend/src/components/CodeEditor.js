@@ -5,6 +5,8 @@ import {CODE_SNIPPETS} from "../constant";
 import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
 import {executeCode} from "./api";
+import axios from "axios";
+import Modal from "../components/Modal";
 
 const CodeEditor = () => {
     const [value, setValue] = useState("");
@@ -12,6 +14,7 @@ const CodeEditor = () => {
     const [output, setOutput] = useState(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
+    const [analysis, setAnalysis] = useState("");
 
     const editorRef = useRef();
     const onMount = (editor) => {
@@ -27,11 +30,8 @@ const CodeEditor = () => {
         if (!sourceCode) return;
         try {
             const {run} = await executeCode(language, sourceCode);
-            console.log(run);
             setOutput(run.output.split("\n"));
-        } catch (error) {
-            //setError(run.stderr);
-        }
+        } catch (error) {}
     };
     return (
         <div>
@@ -57,4 +57,5 @@ const CodeEditor = () => {
         </div>
     );
 };
+
 export default CodeEditor;
