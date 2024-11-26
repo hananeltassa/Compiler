@@ -17,7 +17,6 @@ const FileTabs = () => {
     const files = useSelector((state) => state.file.files);
     const currentFile = useSelector((state) => state.file.currentFile);
     const { setFileContent, setLanguage } = useFileContent(); // Use the context to manage file content and language
-
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showFileInputs, setShowFileInputs] = useState(false);
     const [newFileName, setNewFileName] = useState("");
@@ -53,12 +52,13 @@ const FileTabs = () => {
                 },
             });
     
-            // Extract content from response
             const fileContent = response.data.content;
             console.log("File content:", fileContent);
-    
-            // Update your state or context with the file content
-            setFileContent(fileContent); // Replace with your state function
+            setFileContent(fileContent); 
+
+            const detectedLanguage = detectLanguage(fileName);
+            setLanguage(detectedLanguage);  // Set the language in the context
+            dispatch(setCurrentFile(fileName));  // Set the current file in Redux state
         } catch (error) {
             console.error("Error fetching file content:", error);
             dispatch(setError("Failed to load file content"));
@@ -76,10 +76,8 @@ const FileTabs = () => {
             java: 'java',
         };
     
-        return languageMap[extension] || 'text';
+        return languageMap[extension] || 'text'; 
     };
-    
-    
 
     const handleCreateFile = () => {
         setShowFileInputs(true);
