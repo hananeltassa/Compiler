@@ -1,7 +1,21 @@
 .box {
-    height: 75vh;
-    width: 50%;
-    border: 1px solid #333;
-    margin-left: 5px;
-    text-align: left;
+  height: 79vh;
+  width: 50%;
+  border: 1px solid #333;
+  margin-left: 5px;
+  text-align: left;
+  overflow-y: auto; 
+  overflow-x: hidden; 
+  padding: 10px; 
+  box-sizing: border-box; 
+}
+
+pre {
+  white-space: pre-wrap; 
+  word-wrap: break-word; 
+  margin: 0;
+}
+
+h4 {
+  margin: 0;
 }

@@ -1,33 +1,27 @@
-.box {
-    min-height: 100vh;
-    background-color: #0f0a19;
-}
 body {
-    color: white;
-    background-color: #0f0a19;
+  color: white;
+  background-color: #0f0a19;
 }
-
 
 .container {
-    display: flex; 
-    height: 100vh;
+  display: flex;
+  height: 95vh;
 }
 
 /* Sidebar styling */
 .sidebar {
-    width: 200px; 
-    background-color: #2e2e2e; 
-    color: white;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+  width: 200px;
+  background-color: #2e2e2e;
+  color: white;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }
 
 .editorContainer {
-    flex-grow: 1; 
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
+  padding-left: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
 }

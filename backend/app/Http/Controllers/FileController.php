@@ -3,34 +3,33 @@
 namespace App\Http\Controllers;
 
 use App\Models\File;
-
+use App\Events\FileUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Tymon\JWTAuth\Facades\JWTAuth; 
 
 class FileController extends Controller
 {
-    function create_file(Request $request){
-        // validating request data
-        $validated = $request->validate([
-            'name' => 'required|string',
-            'content' => 'nullable|string',   
-        ]);
-
-        // getting authenticated user from JWT token
+    function create_file(Request $request)
+    {
         $user = JWTAuth::parseToken()->authenticate();
 
-        // generating a unique file path using uniqid()
-        $path = 'files/' . uniqid() . '_' . $validated['name'];
+        $validated = $request->validate([
+            'name' => 'required|string',
+            'content' => 'nullable|string',
+        ]);
 
-        // saving in public storage, if empty save empty file
+        $path = 'files/' . $validated['name'];
+
         Storage::disk('public')->put($path, $validated['content'] ?? '');
 
-        // creating a new file
+        $fileUrl = url('storage/' . $path); 
+
+
         $file = File::create([
             'name' => $validated['name'],
-            'path' => $path,
-            'user_id' => $user->id, 
+            'path' => $fileUrl,  
+            'user_id' => $user->id,
         ]);
 
         return response()->json([
@@ -39,8 +38,9 @@ class FileController extends Controller
         ]);
     }
 
+
     // fetching all files
-     public function fetch_all_files(){
+    public function fetch_all_files(){
         // getting authenticated user
         $user = JWTAuth::parseToken()->authenticate();
     
@@ -51,13 +51,13 @@ class FileController extends Controller
             "message" => "Fetched all files successfully!",
             'files' => $files
         ]);
-     }
+    }
 
     // fetching a specific file by ID
     public function fetch_file($id){
         // finding file by ID
         $file = File::findOrFail($id);
-        
+
         // getting the content from storage
         $content = Storage::disk('public')->get($file->path);
 
@@ -68,8 +68,7 @@ class FileController extends Controller
     }
 
     // editing a file
-    public function edit_file(Request $request, $id)
-    {
+    public function edit_file(Request $request, $id){
         // validating if there is content 
         $validated = $request->validate([
             'content' => 'nullable|string',
@@ -84,6 +83,9 @@ class FileController extends Controller
 
             // updating timstamp in db
             $file->touch();
+
+            // Broadcast file changes to collaborators
+            broadcast(new FileUpdated($id, $validated['content']))->toOthers();
         }
 
         return response()->json([
@@ -95,17 +97,17 @@ class FileController extends Controller
 
     // deleting a file
     public function delete_file($id){
-    // finding file by ID
-    $file = File::findOrFail($id);
+        // finding file by ID
+        $file = File::findOrFail($id);
 
-    // deleting file from storage
-    Storage::disk('public')->delete($file->path);
+        // deleting file from storage
+        Storage::disk('public')->delete($file->path);
 
-    // deleting file in db
-    $file->delete();
+        // deleting file in db
+        $file->delete();
 
-    return response()->json([
+        return response()->json([
         'message' => 'File deleted successfully!',
-    ]);
-}
+        ]);
+    }
 }

@@ -1,22 +1,93 @@
-/* Editor Container */
+/* Container for the entire editor section */
 .editorContainer {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  height: 100vh;
+  overflow-y: hidden;
 }
 
-/* Editor component styles */
+/* Styling for the languages header */
+.languageHeader {
+  align-self: flex-start;
+  margin-bottom: 10px;
+  font-size: 1.5rem;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.bttnsContainer {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+/* Flex container for dropdown and run button */
+.controlsContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.analyisBttn,
+.runButton {
+  padding: 10px;
+  width: 135px;
+  font-size: 0.9rem;
+  color: white;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.dropdownButton {
+  flex-grow: 1;
+}
+
+.analyisBttn:hover,
+.runButton:hover {
+  background-color: #0056b3;
+}
+
+/* Disabled state for the run button */
+.runButton:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+/* Editor container layout */
+.editorLayout {
+  display: flex;
+  flex-direction: row;
+  margin-top: 10px;
+  flex-grow: 1;
+}
+
+/* Monaco editor styling */
 .editor {
-    flex-grow: 2; 
-    background-color: #1e1e1e;
+  flex-grow: 2;
+  height: 100%;
+  background-color: #1e1e1e;
 }
 
 /* Output styling */
 .outputContainer {
-    margin-top: 20px;
-    background-color: #f4f4f4;
-    padding: 10px;
-    min-height: 200px; 
-    border: 1px solid #ccc;
-    border-radius: 5px;
+  flex-grow: 1;
+  padding: 10px;
+  background-color: #f4f4f4;
+  min-height: 200px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+/* Loading message */
+.loadingMessage {
+  color: #007bff;
+}
+
+/* Error message */
+.errorMessage {
+  color: red;
 }
