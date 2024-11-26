@@ -18,7 +18,7 @@ Route::middleware('jwt.auth')->group(function () {
     // Authenticated routes
     Route::get('user', [JWTAuthController::class, 'getUser']); 
     Route::post('logout', [JWTAuthController::class, 'logout']);
-
+    
     Route::post('/analyze', [CodeAnalysisController::class, 'analyze']);
 
     Route::prefix('files')->group(function () {
