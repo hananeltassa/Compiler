@@ -1,31 +1,39 @@
 import { Editor } from "@monaco-editor/react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import DropdownButton from "./DropDown";
 import { CODE_SNIPPETS } from "../constant";
 import styles from "../styles/CodeEditor.module.css";
 import OutPut from "./OutPut";
 import { executeCode } from "./api";
+import { useFileContent } from "../contexts/FileContentContext"; // Import context
 import axios from "axios";
 import Modal from "../components/Modal";
 
 const CodeEditor = () => {
-  const [value, setValue] = useState("");
-  const [language, setLanguage] = useState("javascript");
-  const [output, setOutput] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
-  const [analysis, setAnalysis] = useState("");
+    const { fileContent, language, setLanguage } = useFileContent(); // Get context values and updater
+    const [value, setValue] = useState(fileContent || "");
+    const [output, setOutput] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState("");
+    const [analysis, setAnalysis] = useState("");
 
   const editorRef = useRef();
+
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
   };
 
-  const handleLanguageSelect = (lang) => {
-    setLanguage(lang);
-    setValue(CODE_SNIPPETS[lang]);
-  };
+    useEffect(() => {
+        if (fileContent) {
+            setValue(fileContent);
+        }
+    }, [fileContent]);
+
+    const handleLanguageSelect = (lang) => {
+        setLanguage(lang); 
+        setValue(CODE_SNIPPETS[lang]); 
+    };
 
   const runCode = async () => {
     const sourceCode = editorRef.current.getValue();
