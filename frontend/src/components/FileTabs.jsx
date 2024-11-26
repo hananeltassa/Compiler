@@ -5,6 +5,7 @@ import styles from "../styles/FileTabs.module.css";
 import InviteUserForm from "./InviteUserForm";
 import { useFileContent } from "../contexts/FileContentContext";
 import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
+import InvitationsModal from "./InvitationsModal";
 
 const languageMap = {
     js: "javascript",
@@ -20,7 +21,6 @@ const detectLanguage = (fileName) => {
     return languageMap[extension] || "text";
 };
 
-
 const fetchFiles = async (dispatch) => {
     dispatch(setLoading(true));
     try {
@@ -35,7 +35,6 @@ const fetchFiles = async (dispatch) => {
     }
 };
 
-
 const fetchFileContent = async (fileName, setFileContent, setLanguage, dispatch) => {
     try {
         const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
@@ -49,18 +48,6 @@ const fetchFileContent = async (fileName, setFileContent, setLanguage, dispatch)
     }
 };
 
-
-const fetchInvitations = async (fileId, setInvitations) => {
-    try {
-        const response = await axios.get(`http://localhost:8000/api/files/${fileId}/invitations`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        setInvitations(response.data); 
-    } catch (error) {
-        console.error("Failed to fetch invitations", error);
-    }
-};
-
 const FileTabs = () => {
     const dispatch = useDispatch();
     const files = useSelector((state) => state.file.files);
@@ -71,7 +58,6 @@ const FileTabs = () => {
     const [showFileInputs, setShowFileInputs] = useState(false);
     const [newFileName, setNewFileName] = useState("");
     const [showInvitationsModal, setShowInvitationsModal] = useState(false);
-    const [invitations, setInvitations] = useState([]);
 
     // Fetch files when component mounts
     useEffect(() => {
@@ -110,10 +96,13 @@ const FileTabs = () => {
         }
     };
 
-    // Show invitations modal and fetch invitations
+    // Show invitations modal
     const handleViewInvitations = () => {
         setShowInvitationsModal(true);
-        fetchInvitations(currentFile, setInvitations);
+    };
+
+    const handleCloseModal = () => {
+        setShowInvitationsModal(false);
     };
 
     return (
@@ -161,13 +150,16 @@ const FileTabs = () => {
 
                 {currentFile && (
                     <button onClick={handleViewInvitations} className={styles.viewInvitationsBtn}>
-                        View Invitations
+                        Collaborators
                     </button>
                 )}
             </div>
 
-            {/* Invite User Form */}
             {showInviteForm && <InviteUserForm fileId={currentFile} onClose={() => setShowInviteForm(false)} />}
+
+            {showInvitationsModal && (
+                <InvitationsModal fileId={currentFile} onClose={handleCloseModal} />
+            )}
         </div>
     );
 };

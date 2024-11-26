@@ -97,7 +97,7 @@ class InvitationController extends Controller
     public function getCollaborators($fileId)
     {
         $collaborators = Invitation::where('file_id', $fileId)
-            ->whereIn('status', ['accepted', 'pending'])
+            ->whereIn('status', ['accepted', 'pending','declined'])
             ->get();
     
         if ($collaborators->isEmpty()) {
