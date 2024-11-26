@@ -6,30 +6,35 @@ use App\Models\File;
 use App\Events\FileUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Tymon\JWTAuth\Facades\JWTAuth; 
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class FileController extends Controller
 {
-    function create_file(Request $request)
+    // Create a new file
+    public function create_file(Request $request)
     {
         $user = JWTAuth::parseToken()->authenticate();
 
         $validated = $request->validate([
             'name' => 'required|string',
             'content' => 'nullable|string',
+            'language' => 'required|string', 
         ]);
+
+        $content = $validated['content'] ?? '';
 
         $path = 'files/' . $validated['name'];
 
         Storage::disk('public')->put($path, $validated['content'] ?? '');
 
-        $fileUrl = url('storage/' . $path); 
-
+        $fileUrl = url('storage/' . $path);  
 
         $file = File::create([
             'name' => $validated['name'],
-            'path' => $fileUrl,  
+            'path' => $fileUrl,
             'user_id' => $user->id,
+            'content' => $validated['content'],  
+            'language' => $validated['language'],  
         ]);
 
         return response()->json([
@@ -38,13 +43,24 @@ class FileController extends Controller
         ]);
     }
 
+    public function serveFile($fileName)
+    {
+        $filePath = "files/{$fileName}";
 
-    // fetching all files
-    public function fetch_all_files(){
-        // getting authenticated user
+        // Check if the file exists
+        if (!Storage::exists($filePath)) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+
+        // Serve the file content
+        return response()->file(storage_path("app/{$filePath}"));
+    }
+
+
+    public function fetch_all_files()
+    {
         $user = JWTAuth::parseToken()->authenticate();
     
-        // fetching all files belonging to user
         $files = File::where('user_id', $user->id)->get();
 
         return response()->json([
@@ -53,40 +69,39 @@ class FileController extends Controller
         ]);
     }
 
-    // fetching a specific file by ID
-    public function fetch_file($id){
-        // finding file by ID
-        $file = File::findOrFail($id);
-
-        // getting the content from storage
-        $content = Storage::disk('public')->get($file->path);
-
+    public function fetch_file($fileName)
+    {
+        $file = File::where('name', $fileName)->firstOrFail();
+        $content = $file->content;
+    
         return response()->json([
             'file' => $file,
             'content' => $content,
+            'language' => $file->language, 
         ]);
     }
 
-    // editing a file
-    public function edit_file(Request $request, $id){
-        // validating if there is content 
+    // Editing a file
+    public function edit_file(Request $request, $id)
+    {
         $validated = $request->validate([
             'content' => 'nullable|string',
+            'language' => 'nullable|string',
         ]);
 
-        // finding file
         $file = File::findOrFail($id);
 
-        // updating content in storage
-        if (!empty($validated['content'])) {
-            Storage::disk('public')->put($file->path, $validated['content']);
-
-            // updating timstamp in db
-            $file->touch();
-
-            // Broadcast file changes to collaborators
-            broadcast(new FileUpdated($id, $validated['content']))->toOthers();
+        if (isset($validated['content'])) {
+            $file->content = $validated['content'];  
         }
+
+        if (isset($validated['language'])) {
+            $file->language = $validated['language'];  
+        }
+
+        $file->touch();
+
+        $file->save();
 
         return response()->json([
             'message' => 'File updated successfully!',
@@ -95,19 +110,19 @@ class FileController extends Controller
     }
 
 
-    // deleting a file
-    public function delete_file($id){
-        // finding file by ID
+    // Deleting a file
+    public function delete_file($id)
+    {
         $file = File::findOrFail($id);
 
-        // deleting file from storage
+        // Delete file from storage
         Storage::disk('public')->delete($file->path);
 
-        // deleting file in db
+        // Delete file record from DB
         $file->delete();
 
         return response()->json([
-        'message' => 'File deleted successfully!',
+            'message' => 'File deleted successfully!',
         ]);
     }
 }

@@ -8,6 +8,8 @@ class File extends Model
 {
     protected $fillable = [
         "name", 
+        "content",
+        "language",
         "path", 
         "user_id"
     ];
