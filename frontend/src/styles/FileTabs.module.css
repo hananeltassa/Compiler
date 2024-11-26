@@ -1,3 +1,4 @@
+/* Sidebar Container */
 .sidebarContainer {
     display: flex;
     flex-direction: column;
@@ -5,59 +6,78 @@
     padding-top: 20px;
 }
 
+/* New File Button */
 .newFileBtn {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background-color: #007bff;
     border: none;
     color: white;
     font-size: 18px;
+    font-weight: bold;
     cursor: pointer;
     margin-bottom: 20px;
+    border-radius: 5px; 
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+/* New File Button Hover */
 .newFileBtn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
+/* File Tabs Container */
 .fileTabs {
     overflow-y: auto;
     flex-grow: 1;
 }
 
+/* Tab Styles */
 .tab {
     padding: 10px;
     cursor: pointer;
     color: white;
     background-color: #333;
     margin-bottom: 5px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
 }
 
+/* Selected Tab Style */
 .selectedTab {
     background-color: #555;
 }
 
+/* File Actions Container */
 .fileActions {
     display: flex;
     justify-content: space-between;
     padding-top: 10px;
 }
 
+/* Save File Button */
 .saveFileBtn,
 .inviteBtn {
     padding: 10px;
     color: white;
-    background-color: #007bff; 
+    background-color: #007bff;
     border: none;
     cursor: pointer;
     font-size: 14px;
+    font-weight: bold;
+    border-radius: 5px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
+/* Save File Button Hover */
 .saveFileBtn:hover,
 .inviteBtn:hover {
     background-color: #0056b3;
+    transform: translateY(-2px);
 }
 
+/* Input Container */
 .nameInputContainer {
     margin: 10px 0;
     display: flex;
@@ -65,16 +85,53 @@
     align-items: center;
 }
 
+/* File Name Input */
 .fileNameInput {
     width: 90%;
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 4px;
     font-size: 14px;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* File Name Input Focus */
 .fileNameInput:focus {
     outline: none;
     border-color: #007bff;
     box-shadow: 0 0 3px rgba(0, 123, 255, 0.5);
+}
+
+/* Invitations Button */
+.viewInvitationsBtn {
+    background-color: #007bff; 
+    color: #ffffff; 
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 5px; 
+    font-size: 14px; 
+    font-weight: bold; 
+    cursor: pointer; 
+    transition: background-color 0.3s ease, transform 0.2s ease; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Invitations Button Hover */
+.viewInvitationsBtn:hover {
+    background-color: #0056b3; 
+    transform: translateY(-2px); 
+}
+
+/* Disabled Invitations Button */
+.viewInvitationsBtn:disabled {
+    background-color: #d6d6d6; 
+    color: #8a8a8a; 
+    cursor: not-allowed; 
+    box-shadow: none; 
+}
+
+/* Focus State for Invitations Button */
+.viewInvitationsBtn:focus {
+    outline: none; 
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.5);
 }

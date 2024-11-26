@@ -5,6 +5,48 @@ import styles from "../styles/FileTabs.module.css";
 import InviteUserForm from "./InviteUserForm";
 import { useFileContent } from "../contexts/FileContentContext";
 import { addFile, setCurrentFile, setError, setLoading, setFiles } from "../redux/features/fileSlice";
+import InvitationsModal from "./InvitationsModal";
+
+const languageMap = {
+    js: "javascript",
+    php: "php",
+    html: "html",
+    css: "css",
+    py: "python",
+    java: "java",
+};
+
+const detectLanguage = (fileName) => {
+    const extension = fileName.split(".").pop().toLowerCase();
+    return languageMap[extension] || "text";
+};
+
+const fetchFiles = async (dispatch) => {
+    dispatch(setLoading(true));
+    try {
+        const response = await axios.get("http://localhost:8000/api/files", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        dispatch(setFiles(response.data.files));
+    } catch (error) {
+        dispatch(setError(error.response?.data?.message || "Failed to fetch files"));
+    } finally {
+        dispatch(setLoading(false));
+    }
+};
+
+const fetchFileContent = async (fileName, setFileContent, setLanguage, dispatch) => {
+    try {
+        const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+        setFileContent(response.data.content);
+        setLanguage(detectLanguage(fileName));
+        dispatch(setCurrentFile(fileName));
+    } catch (error) {
+        dispatch(setError("Failed to load file content"));
+    }
+};
 
 const FileTabs = () => {
     const dispatch = useDispatch();
@@ -15,58 +57,25 @@ const FileTabs = () => {
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showFileInputs, setShowFileInputs] = useState(false);
     const [newFileName, setNewFileName] = useState("");
+    const [showInvitationsModal, setShowInvitationsModal] = useState(false);
 
-    const languageMap = {
-        js: "javascript",
-        php: "php",
-        html: "html",
-        css: "css",
-        py: "python",
-        java: "java",
-    };
-
-    const detectLanguage = (fileName) => {
-        const extension = fileName.split(".").pop().toLowerCase();
-        return languageMap[extension] || "text";
-    };
-
+    // Fetch files when component mounts
     useEffect(() => {
-        const fetchFiles = async () => {
-            dispatch(setLoading(true));
-            try {
-                const response = await axios.get("http://localhost:8000/api/files", {
-                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                });
-                dispatch(setFiles(response.data.files));
-            } catch (error) {
-                dispatch(setError(error.response?.data?.message || "Failed to fetch files"));
-            } finally {
-                dispatch(setLoading(false));
-            }
-        };
-
-        fetchFiles();
+        fetchFiles(dispatch);
     }, [dispatch]);
 
-    const handleFileSelect = async (fileName) => {
-        try {
-            const response = await axios.get(`http://localhost:8000/api/files/${fileName}`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
-            const fileContent = response.data.content;
-            setFileContent(fileContent);
-            setLanguage(detectLanguage(fileName));
-            dispatch(setCurrentFile(fileName));
-        } catch (error) {
-            dispatch(setError("Failed to load file content"));
-        }
+    // Handle file selection
+    const handleFileSelect = (fileName) => {
+        fetchFileContent(fileName, setFileContent, setLanguage, dispatch);
     };
 
+    // Create new file
     const handleCreateFile = () => {
         setShowFileInputs(true);
-        setNewFileName(""); // Reset file name
+        setNewFileName("");
     };
 
+    // Save new file
     const handleSaveFile = async () => {
         if (!newFileName.trim()) {
             dispatch(setError("File name cannot be empty"));
@@ -74,23 +83,26 @@ const FileTabs = () => {
         }
 
         const detectedLanguage = detectLanguage(newFileName);
-
         try {
             const response = await axios.post(
                 "http://localhost:8000/api/files",
-                {
-                    name: newFileName.trim(),
-                    language: detectedLanguage,
-                    content: "",
-                },
+                { name: newFileName.trim(), language: detectedLanguage, content: "" },
                 { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
             );
-
             dispatch(addFile(response.data.file));
             setShowFileInputs(false);
         } catch (error) {
             dispatch(setError("Failed to create file"));
         }
+    };
+
+    // Show invitations modal
+    const handleViewInvitations = () => {
+        setShowInvitationsModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setShowInvitationsModal(false);
     };
 
     return (
@@ -121,11 +133,11 @@ const FileTabs = () => {
             <div className={styles.fileTabs}>
                 {files.map((file) => (
                     <div
-                        key={file.id}  
-                        className={currentFile === file.name ? styles.selectedTab : styles.tab} 
-                        onClick={() => handleFileSelect(file.name)}  
+                        key={file.id}
+                        className={currentFile === file.name ? styles.selectedTab : styles.tab}
+                        onClick={() => handleFileSelect(file.name)}
                     >
-                        {file.name}  
+                        {file.name}
                     </div>
                 ))}
             </div>
@@ -135,10 +147,19 @@ const FileTabs = () => {
                 <button onClick={() => setShowInviteForm(true)} className={styles.inviteBtn}>
                     Invite
                 </button>
+
+                {currentFile && (
+                    <button onClick={handleViewInvitations} className={styles.viewInvitationsBtn}>
+                        Collaborators
+                    </button>
+                )}
             </div>
 
-            {/* Invite User Form */}
             {showInviteForm && <InviteUserForm fileId={currentFile} onClose={() => setShowInviteForm(false)} />}
+
+            {showInvitationsModal && (
+                <InvitationsModal fileId={currentFile} onClose={handleCloseModal} />
+            )}
         </div>
     );
 };

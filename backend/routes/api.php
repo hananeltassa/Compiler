@@ -15,22 +15,6 @@ Route::post('login', [JWTAuthController::class, 'login'])->name('login');
 Route::get('invitations/accept/{id}', [InvitationController::class, 'acceptInvitation'])->name('invitation.accept');
 Route::get('/invitations/deny/{id}', [InvitationController::class, 'denyInvitation'])->name('invitation.deny');
 
-Route::get('/files/{filename}', function ($filename) {
-    $filePath = "files/{$filename}";
-
-    // Check if the file exists in the public directory
-    if (!Storage::disk('public')->exists($filePath)) {
-        return response()->json(['error' => 'File not found'], 404);
-    }
-
-    // Get the file contents
-    $fileContents = Storage::disk('public')->get($filePath);
-
-    return response()->json([
-        'content' => $fileContents,
-        'filename' => $filename,
-    ]);
-});
 
 Route::middleware('jwt.auth')->group(function () {
     // Authenticated routes
@@ -47,15 +31,23 @@ Route::middleware('jwt.auth')->group(function () {
         Route::delete('{id}', [FileController::class, 'delete_file']); 
     });
 
-    Route::prefix('collaborators')->group(function () {
-        Route::delete('/', [CollaboratorController::class, 'delete']); 
-        Route::get('/', [CollaboratorController::class, 'index']);
-    });
-
     Route::prefix('invitations')->group(function () {
         Route::post('/', [InvitationController::class, 'sendInvitation']); 
-        Route::put('/', [InvitationController::class, 'changeRole']); 
-
     });
 
+});
+
+Route::get('/files/{filename}', function ($filename) {
+    $filePath = "files/{$filename}";
+
+    if (!Storage::disk('public')->exists($filePath)) {
+        return response()->json(['error' => 'File not found'], 404);
+    }
+
+    $fileContents = Storage::disk('public')->get($filePath);
+
+    return response()->json([
+        'content' => $fileContents,
+        'filename' => $filename,
+    ]);
 });

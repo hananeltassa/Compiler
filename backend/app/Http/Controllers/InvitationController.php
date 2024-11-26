@@ -94,6 +94,7 @@ class InvitationController extends Controller
             return response()->json(['message' => 'Failed to process the request.'], 500);
         }
     }
+<<<<<<< HEAD
     public function changeRole(Request $request){
         $invitation=Invitation::where('invited_email',$request->invited_email)->where('file_id',$request->file_id)->first();
         if (!$invitation) {
@@ -102,6 +103,22 @@ class InvitationController extends Controller
         $invitation->role = $invitation->role === 'editor' ? 'viewer' : 'editor';
         $invitation->save();
         return response()->json([$invitation->role], 200);
+=======
+
+    public function getCollaborators($fileId)
+    {
+        $collaborators = Invitation::where('file_id', $fileId)
+            ->whereIn('status', ['accepted', 'pending','declined'])
+            ->get();
+    
+        if ($collaborators->isEmpty()) {
+            return response()->json(['message' => 'No collaborators found for this file.'], 404);
+        }
+        return response()->json($collaborators);
+    }
+    
+
+>>>>>>> 22687c7432c695164b1a232b5dfbd5cdd4910235
 
     }
 }
