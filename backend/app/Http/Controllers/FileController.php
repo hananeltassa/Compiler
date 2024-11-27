@@ -171,7 +171,7 @@ class FileController extends Controller
             return response()->json(['message' => 'Failed to update file content: ' . $e->getMessage()], 500);
         }
     
-        event(new FileUpdated($fileName, $content));
+        broadcast(new FileUpdated($fileName, $content));
     
         return response()->json([
             'message' => 'File updated successfully!'

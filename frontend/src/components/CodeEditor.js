@@ -9,7 +9,6 @@ import { useFileContent } from "../contexts/FileContentContext";
 import DropdownButton from "./DropDown";
 import { executeCode } from "./api";
 import OutPut from "./OutPut";
-import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 
 const CodeEditor = () => {
@@ -38,25 +37,25 @@ const CodeEditor = () => {
   useEffect(() => {
     if (!currentFile) return;
 
-    const echo = new Echo({
-      broadcaster: "pusher",
-      key: "d147720fc37b1e8976ee",
+    Pusher.logToConsole = true;
+
+    const pusher = new Pusher("d147720fc37b1e8976ee", {
       cluster: "ap2",
-      forceTLS: true,
     });
 
     console.log("Current file:", currentFile);
 
-    const channel = echo.channel(`file.${currentFile}`);
+    const channel = pusher.subscribe(`file.${currentFile}`);
 
-    channel.listen("FileUpdated", (event) => {
+    channel.bind("FileUpdated", (event) => {
       console.log("File updated:", event);
       setValue(event.content);
     });
 
     // Clean up: unsubscribe when the component unmounts or the current file changes
     return () => {
-      echo.leaveChannel(`file.${currentFile}`);
+      channel.unbind_all();
+      channel.unsubscribe();
     };
   }, [currentFile]);
 
