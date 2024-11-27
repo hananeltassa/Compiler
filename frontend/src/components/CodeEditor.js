@@ -9,6 +9,7 @@ import { useFileContent } from "../contexts/FileContentContext";
 import DropdownButton from "./DropDown";
 import { executeCode } from "./api";
 import OutPut from "./OutPut";
+import Echo from "laravel-echo";
 import Pusher from "pusher-js";
 
 const CodeEditor = () => {
@@ -35,20 +36,27 @@ const CodeEditor = () => {
   }, [fileContent]);
 
   useEffect(() => {
-    const pusher = new Pusher("d147720fc37b1e8976ee", {
+    if (!currentFile) return;
+
+    const echo = new Echo({
+      broadcaster: "pusher",
+      key: "d147720fc37b1e8976ee",
       cluster: "ap2",
+      forceTLS: true,
     });
 
-    console.log(currentFile);
-    
-    const channel = pusher.subscribe(`file.${currentFile}`);
+    console.log("Current file:", currentFile);
 
-    channel.bind("FileUpdated", function (data) {
-      setValue(data.content);
+    const channel = echo.channel(`file.${currentFile}`);
+
+    channel.listen("FileUpdated", (event) => {
+      console.log("File updated:", event);
+      setValue(event.content);
     });
 
+    // Clean up: unsubscribe when the component unmounts or the current file changes
     return () => {
-      pusher.unsubscribe(`file.${currentFile}`);
+      echo.leaveChannel(`file.${currentFile}`);
     };
   }, [currentFile]);
 
@@ -104,6 +112,35 @@ const CodeEditor = () => {
     }
   };
 
+  const handleCodeChange = (newCode) => {
+    setValue(newCode);
+    console.log("Sending data:", { fileName: currentFile, content: newCode });
+    axios
+      .post(
+        "http://localhost:8000/api/files/update",
+        { fileName: currentFile, content: newCode },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("File updated successfully:", response.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error("Error updating file:", error.response.data);
+          alert(
+            error.response.data.message ||
+              "An error occurred while updating the file."
+          );
+        } else {
+          console.error("Error:", error.message);
+        }
+      });
+  };
+
   const saveFile = async () => {
     const sourceCode = editorRef.current.getValue();
     if (!sourceCode) {
@@ -114,25 +151,6 @@ const CodeEditor = () => {
     if (!currentFile) {
       setError("No file selected.");
       return;
-    }
-
-    try {
-      await axios.post(
-        "http://localhost:8000/api/files/update",
-        {
-          fileName: currentFile,
-          content: sourceCode,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      alert("File saved successfully!");
-    } catch (error) {
-      setError("Error saving file. Please try again.");
     }
   };
 
@@ -173,7 +191,7 @@ const CodeEditor = () => {
           theme="vs-dark"
           language={language}
           value={value}
-          onChange={setValue}
+          onChange={handleCodeChange}
           onMount={onMount}
           defaultValue={CODE_SNIPPETS[language]}
         />

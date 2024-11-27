@@ -28,9 +28,4 @@ class FileUpdated implements ShouldBroadcast
         return new Channel('file.' . $this->filePath);
     }
 
-    public function broadcastAs()
-    {
-        return 'FileUpdated';
-    }
-
 }
