@@ -60,9 +60,27 @@ class FileController extends Controller
     public function fetch_all_files()
     {
         $user = JWTAuth::parseToken()->authenticate();
-    
-        $files = File::where('user_id', $user->id)->get();
 
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
+
+        $ownedFiles = File::where('user_id', $user->id)->get();
+
+        $invitedFiles = File::whereHas('invitations', function ($query) use ($user) {
+            $query->where('invitations.invited_email', $user->email)  // Match based on email
+                ->where('invitations.status', 'accepted');
+        })->get();
+
+        if ($invitedFiles->isEmpty()) {
+            \Log::info("No invited files found for email: {$user->email}");
+        } else {
+            \Log::info("Fetched invited files for email: {$user->email}", $invitedFiles->toArray());
+        }
+
+        $files = $ownedFiles->merge($invitedFiles);
+
+        // Return the combined result
         return response()->json([
             "message" => "Fetched all files successfully!",
             'files' => $files
