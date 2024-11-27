@@ -10,7 +10,7 @@ import { executeCode } from "./api";
 import OutPut from "./OutPut";
 import Pusher from "pusher-js";
 
-const CodeEditor = ({ selectedFile }) => {
+const CodeEditor = () => {
   const { fileContent, language, setLanguage } = useFileContent();
   const [value, setValue] = useState(fileContent || "");
   const [output, setOutput] = useState(null);
@@ -28,21 +28,24 @@ const CodeEditor = ({ selectedFile }) => {
     setValue(fileContent);
   }, [fileContent]);
 
+  const filePath = "http://localhost:8000/storage/files/zayan.js";
   useEffect(() => {
+    if (!filePath) return;
+
     const pusher = new Pusher("d147720fc37b1e8976ee", {
       cluster: "ap2",
     });
 
-    const channel = pusher.subscribe(`file.${selectedFile}`);
+    const channel = pusher.subscribe(`file.${filePath}`);
 
     channel.bind("FileUpdated", function (data) {
       setValue(data.content);
     });
 
     return () => {
-      pusher.unsubscribe(`file.${selectedFile}`);
+      pusher.unsubscribe(`file.${filePath}`);
     };
-  }, [selectedFile]);
+  }, [filePath]);
 
   const handleCodeChange = (newCode) => {
     setValue(newCode);
@@ -51,7 +54,7 @@ const CodeEditor = ({ selectedFile }) => {
     axios
       .post(
         "http://localhost:8000/api/files/update",
-        { content: newCode, fileName: selectedFile },
+        { content: newCode, filePath },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -107,7 +110,10 @@ const CodeEditor = ({ selectedFile }) => {
         }
       );
 
-      setAnalysis(response.data.analysis);
+      setTimeout(() => {
+        setAnalysis(response.data.analysis);
+      }, 200);
+      
     } catch (error) {
       console.error("Error analyzing code:", error);
       alert("Failed to analyze code. Please try again.");

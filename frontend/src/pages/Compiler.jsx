@@ -14,8 +14,6 @@ const Compiler = () => {
     },
   ]);
 
-  const [channels, setChannels] = useState([]);
-
   // Create a new file
   const handleNewFile = () => {
     const newFile = {
@@ -30,6 +28,7 @@ const Compiler = () => {
   // Switch between files
   const handleFileSelect = (fileName) => {
     setSelectedFile(fileName);
+    console.log(fileName);
   };
 
   return (
@@ -45,7 +44,7 @@ const Compiler = () => {
         />
       </div>
       <div className={styles.editorContainer}>
-        <CodeEditor file={files.find((file) => file.name === selectedFile)} />
+        <CodeEditor />
       </div>
     </div>
   );
