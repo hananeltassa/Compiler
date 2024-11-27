@@ -1,7 +1,7 @@
 import React from "react";
 import styles from "../styles/Output.module.css";
 
-const Modal = ({ analysis, onClose, onReAnalyze }) => {
+const Modal = ({ analysis }) => {
   return (
     <div className={styles.box}>
       <div>

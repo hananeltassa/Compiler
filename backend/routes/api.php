@@ -29,6 +29,7 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('{id}', [FileController::class, 'fetch_file']); 
         Route::put('{id}', [FileController::class, 'edit_file']);
         Route::delete('{id}', [FileController::class, 'delete_file']); 
+        Route::post('/update', [FileController::class, 'update_file']);
     });
 
     Route::prefix('invitations')->group(function () {

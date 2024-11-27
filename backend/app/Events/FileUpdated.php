@@ -14,17 +14,18 @@ class FileUpdated
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $fileId;
+    public $fileName;
     public $content;
 
-    public function __construct($fileId, $content)
+    public function __construct($fileName, $content)
     {
-        $this->fileId = $fileId;
+        $this->fileName = $fileName;
         $this->content = $content;
     }
 
     public function broadcastOn()
     {
-        return new Channel('file.' . $this->fileId); // File-specific channel
+        return new Channel('file.' . $this->fileName);
     }
+
 }
