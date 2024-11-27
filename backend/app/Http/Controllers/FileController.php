@@ -72,12 +72,6 @@ class FileController extends Controller
                 ->where('invitations.status', 'accepted');
         })->get();
 
-        if ($invitedFiles->isEmpty()) {
-            \Log::info("No invited files found for email: {$user->email}");
-        } else {
-            \Log::info("Fetched invited files for email: {$user->email}", $invitedFiles->toArray());
-        }
-
         $files = $ownedFiles->merge($invitedFiles);
 
         // Return the combined result
