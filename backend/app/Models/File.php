@@ -8,11 +8,20 @@ class File extends Model
 {
     protected $fillable = [
         "name", 
-        "content",
         "language",
         "path", 
         "user_id"
     ];
 
+    // Define relationship with invitations
+    public function invitations()
+    {
+        return $this->hasMany(Invitation::class);
+    }
 
+    // Define relationship with the user who owns the file
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
