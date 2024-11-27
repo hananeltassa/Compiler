@@ -10,22 +10,23 @@ use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
-class FileUpdated
+class FileUpdated implements ShouldBroadcast
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
-
-    public $fileName;
+ 
+    public $filePath;
     public $content;
 
-    public function __construct($fileName, $content)
-    {
-        $this->fileName = $fileName;
+    public function __construct($filePath, $content){
+        $this->filePath = $filePath;
         $this->content = $content;
     }
 
-    public function broadcastOn()
-    {
-        return new Channel('file.' . $this->fileName);
+    public function broadcastOn(){
+        return new Channel('file.' . $this->filePath);
     }
 
+    public function broadcastAs(){
+        return 'FileUpdated';
+    }
 }

@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import { Editor } from "@monaco-editor/react";
 import { CODE_SNIPPETS } from "../constant";
 import { useRef, useState, useEffect } from "react";
-import { useSelector } from 'react-redux'; 
+import { useSelector } from "react-redux";
 import styles from "../styles/CodeEditor.module.css";
 import { useFileContent } from "../contexts/FileContentContext";
 import DropdownButton from "./DropDown";
@@ -20,7 +20,6 @@ const CodeEditor = () => {
   const [analysis, setAnalysis] = useState("");
   const editorRef = useRef();
 
-  // Get the current file from Redux store
   const currentFile = useSelector((state) => state.file.currentFile);
 
   const onMount = (editor) => {
@@ -33,18 +32,27 @@ const CodeEditor = () => {
   }, [fileContent]);
 
   useEffect(() => {
+    if (!currentFile) return;
+
+    Pusher.logToConsole = true;
+
     const pusher = new Pusher("d147720fc37b1e8976ee", {
       cluster: "ap2",
     });
 
-    const channel = pusher.subscribe(`file.${currentFile}`); 
+    console.log("Current file:", currentFile);
 
-    channel.bind("FileUpdated", function (data) {
-      setValue(data.content);
+    const channel = pusher.subscribe(`file.${currentFile}`);
+
+    channel.bind("FileUpdated", (event) => {
+      console.log("File updated:", event);
+      setValue(event.content);
     });
 
+    // Clean up: unsubscribe when the component unmounts or the current file changes
     return () => {
-      pusher.unsubscribe(`file.${currentFile}`);
+      channel.unbind_all();
+      channel.unsubscribe();
     };
   }, [currentFile]);
 
@@ -91,11 +99,42 @@ const CodeEditor = () => {
         }
       );
 
-      setAnalysis(response.data.analysis);
+      setTimeout(() => {
+        setAnalysis(response.data.analysis);
+      }, 200);
     } catch (error) {
       console.error("Error analyzing code:", error);
       alert("Failed to analyze code. Please try again.");
     }
+  };
+
+  const handleCodeChange = (newCode) => {
+    setValue(newCode);
+    console.log("Sending data:", { fileName: currentFile, content: newCode });
+    axios
+      .post(
+        "http://localhost:8000/api/files/update",
+        { fileName: currentFile, content: newCode },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      )
+      .then((response) => {
+        console.log("File updated successfully:", response.data);
+      })
+      .catch((error) => {
+        if (error.response) {
+          console.error("Error updating file:", error.response.data);
+          alert(
+            error.response.data.message ||
+              "An error occurred while updating the file."
+          );
+        } else {
+          console.error("Error:", error.message);
+        }
+      });
   };
 
   const saveFile = async () => {
@@ -108,25 +147,6 @@ const CodeEditor = () => {
     if (!currentFile) {
       setError("No file selected.");
       return;
-    }
-
-    try {
-      await axios.post(
-        "http://localhost:8000/api/files/update",
-        {
-          fileName: currentFile,
-          content: sourceCode,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-
-      alert("File saved successfully!");
-    } catch (error) {
-      setError("Error saving file. Please try again.");
     }
   };
 
@@ -141,7 +161,11 @@ const CodeEditor = () => {
         />
         <div className={styles.bttnsContainer}>
           {/* Run Button */}
-          <button className={styles.runButton} onClick={runCode} disabled={loading}>
+          <button
+            className={styles.runButton}
+            onClick={runCode}
+            disabled={loading}
+          >
             {loading ? "Running..." : "Run Code"}
           </button>
 
@@ -163,7 +187,7 @@ const CodeEditor = () => {
           theme="vs-dark"
           language={language}
           value={value}
-          onChange={setValue}
+          onChange={handleCodeChange}
           onMount={onMount}
           defaultValue={CODE_SNIPPETS[language]}
         />

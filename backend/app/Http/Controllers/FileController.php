@@ -72,6 +72,7 @@ class FileController extends Controller
                 ->where('invitations.status', 'accepted');
         })->get();
 
+
         $files = $ownedFiles->merge($invitedFiles);
 
         // Return the combined result
@@ -148,26 +149,33 @@ class FileController extends Controller
         $fileName = $request->input('fileName');
         $content = $request->input('content');
     
+        // Find the file in the database using the file name
         $file = File::where('name', $fileName)->first();
     
         if (!$file) {
             return response()->json(['message' => 'File not found'], 404);
         }
     
-        $path = str_replace(url('storage'), '', $file->path);
+        // Extract the file path from the stored URL (if URL is stored)
+        $filePath = str_replace(url('storage'), '', $file->path);
+    
+        // Ensure the file path is correct
+        if (!$filePath) {
+            return response()->json(['message' => 'Invalid file path'], 400);
+        }
     
         try {
-            Storage::disk('public')->put($path, $content);
+            // Update the file content on the disk
+            Storage::disk('public')->put($filePath, $content);
         } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to update file content'], 500);
+            return response()->json(['message' => 'Failed to update file content: ' . $e->getMessage()], 500);
         }
-
-        $file->content = $content;
-        $file->save();
     
-        event(new \App\Events\FileUpdated($fileName, $content));
-
-        return response()->json(['message' => 'File updated successfully!']);
+        broadcast(new FileUpdated($fileName, $content));
+    
+        return response()->json([
+            'message' => 'File updated successfully!'
+        ]);
     }
     
 }
