@@ -15,6 +15,20 @@ Route::post('login', [JWTAuthController::class, 'login'])->name('login');
 Route::get('invitations/accept/{id}', [InvitationController::class, 'acceptInvitation'])->name('invitation.accept');
 Route::get('/invitations/deny/{id}', [InvitationController::class, 'denyInvitation'])->name('invitation.deny');
 
+Route::get('/files/{filename}', function ($filename) {
+    $filePath = "files/{$filename}";
+
+    if (!Storage::disk('public')->exists($filePath)) {
+        return response()->json(['error' => 'File not found'], 404);
+    }
+
+    $fileContents = Storage::disk('public')->get($filePath);
+    return response()->json([
+        'content' => $fileContents,
+        'filename' => $filename,
+    ]);
+});
+
 
 Route::middleware('jwt.auth')->group(function () {
     // Authenticated routes
@@ -29,29 +43,16 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('{id}', [FileController::class, 'fetch_file']); 
         Route::put('{id}', [FileController::class, 'edit_file']);
         Route::delete('{id}', [FileController::class, 'delete_file']); 
-        Route::post('/update', [FileController::class, 'update_file']);
+        Route::post('/update', [FileController::class, 'updateFile']);
+
     });
 
     Route::prefix('invitations')->group(function () {
         Route::post('/', [InvitationController::class, 'sendInvitation']); 
-        Route::put('/', [InvitationController::class, 'changeRole']); 
+        Route::post('/role', [InvitationController::class, 'changeRole']); 
         Route::get('/{fileId}', [InvitationController::class, 'getCollaborators']); 
 
     });
 
 });
 
-Route::get('/files/{filename}', function ($filename) {
-    $filePath = "files/{$filename}";
-
-    if (!Storage::disk('public')->exists($filePath)) {
-        return response()->json(['error' => 'File not found'], 404);
-    }
-
-    $fileContents = Storage::disk('public')->get($filePath);
-
-    return response()->json([
-        'content' => $fileContents,
-        'filename' => $filename,
-    ]);
-});

@@ -24,9 +24,17 @@ const fileSlice = createSlice({
         addFile: (state, action) => {
             state.files.push(action.payload);
         },
+        updateFileContent: (state, action) => {
+            const { fileName, content } = action.payload;
+            const file = state.files.find((file) => file.name === fileName);
+            if (file) {
+                file.content = content;
+            }
+        },
     },
 });
 
-export const { setFiles, setCurrentFile, setLoading, setError, addFile } = fileSlice.actions;
+export const { setFiles, setCurrentFile, setLoading, setError, addFile, updateFileContent } =
+    fileSlice.actions;
 
 export default fileSlice.reducer;
