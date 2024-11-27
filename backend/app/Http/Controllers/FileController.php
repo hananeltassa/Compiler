@@ -126,18 +126,5 @@ class FileController extends Controller
         ]);
     }
 
-    public function update_file(Request $request)
-    {
-        $filePath = $request->filePath;
-        $content = $request->content;
-
-        Storage::disk('public')->put("files/{$filePath}", $content);
-
-        // Broadcast the code change to other users
-        broadcast(new FileUpdated($filePath, $content));
-
-        return response()->json([
-            'message' => 'File updated'
-        ]);
-    }
+    
 }
