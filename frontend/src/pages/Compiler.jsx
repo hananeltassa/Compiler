@@ -38,7 +38,6 @@ const Compiler = () => {
           files={files}
           selectedFile={selectedFile}
           onFileSelect={handleFileSelect}
-          onNewFile={handleNewFile}
           onSaveFile={() => alert("Save File Logic Goes Here")}
           onInvite={() => alert("Invite Logic Goes Here")}
         />
