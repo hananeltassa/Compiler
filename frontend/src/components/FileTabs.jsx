@@ -67,7 +67,7 @@ const FileTabs = () => {
         navigate("/login");
     };
 
-    // Fetch files when component mounts
+
     useEffect(() => {
         fetchFiles(dispatch);
     }, [dispatch]);

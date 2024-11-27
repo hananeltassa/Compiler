@@ -18,12 +18,11 @@ const CodeEditor = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [analysis, setAnalysis] = useState("");
+  const [analyzing, setAnalyzing] = useState(false); // New state for analysis loading
   const editorRef = useRef();
 
   // Get the current file from Redux store
   const currentFile = useSelector((state) => state.file.currentFile);
-
-  //console.log(currentFile);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -89,6 +88,9 @@ const CodeEditor = () => {
       return;
     }
 
+    // Start loading when analysis begins
+    setAnalyzing(true);
+    
     try {
       const response = await axios.post(
         "http://localhost:8000/api/analyze",
@@ -104,10 +106,12 @@ const CodeEditor = () => {
 
       setTimeout(() => {
         setAnalysis(response.data.analysis);
+        setAnalyzing(false); // End loading when analysis finishes
       }, 200);
     } catch (error) {
       console.error("Error analyzing code:", error);
       alert("Failed to analyze code. Please try again.");
+      setAnalyzing(false); // End loading in case of error
     }
   };
 
@@ -195,10 +199,12 @@ const CodeEditor = () => {
           defaultValue={CODE_SNIPPETS[language]}
         />
         <OutPut output={output} />
-        <Modal analysis={analysis} />
+        <Modal analysis={analysis} analyzing={analyzing} />
+
       </div>
 
       {loading && <p className={styles.loadingMessage}>Loading...</p>}
+      {analyzing && <p className={styles.loadingMessage}>Analyzing code...</p>} {/* New loading indicator */}
       {error && <p className={styles.errorMessage}>{error}</p>}
     </div>
   );

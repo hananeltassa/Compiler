@@ -1,21 +1,52 @@
+/* Output.module.css */
 .box {
-  height: 76vh;
-  width: 50%;
+  padding: 20px;
+  background-color: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: 76vh; 
+  width: 50%;  
   border: 1px solid #333;
-  margin-left: 5px;
-  text-align: left;
-  overflow-y: auto; 
-  overflow-x: hidden; 
-  padding: 10px; 
-  box-sizing: border-box; 
+  margin-left: 5px; 
+  text-align: left; 
+  overflow-y: auto;
+  overflow-x: hidden;
+  box-sizing: border-box;
 }
 
+/* Preformatted text styling */
 pre {
-  white-space: pre-wrap; 
-  word-wrap: break-word; 
-  margin: 0;
+  white-space: pre-wrap;
+  word-wrap: break-word;  
+  margin-top: 15px; 
 }
 
+/* Heading styling */
 h4 {
-  margin: 0;
+  margin: 0; 
+}
+
+/* Loading spinner and message */
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Spinner animation */
+.spinner {
+  margin-top: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 50px; 
+  height: 50px;
+  animation: spin 2s linear infinite;
+}
+
+/* Keyframes for spinning effect */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
