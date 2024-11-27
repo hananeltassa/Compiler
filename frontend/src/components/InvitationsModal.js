@@ -1,12 +1,16 @@
-import React, {useEffect, useState} from "react";
+import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
-import {useSelector} from "react-redux";
+import { useSelector } from "react-redux";
 import styles from "../styles/InvitationsModal.module.css";
 
-const InvitationsModal = ({fileId, onClose}) => {
+const InvitationsModal = ({ fileId, onClose }) => {
     const [invitations, setInvitations] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [roleChanges, setRoleChanges] = useState({});
+    
+    // Ref to track if data is fetched to avoid re-fetching
+    const hasFetchedRef = useRef(false);
 
     // Access the file list from the Redux store
     const files = useSelector((state) => state.file.files);
@@ -15,32 +19,35 @@ const InvitationsModal = ({fileId, onClose}) => {
     const file = files.find((f) => f.name === fileId);
     const fileIdForRequest = file ? file.id : null;
 
-    const [roleChanges, setRoleChanges] = useState({});
-
     useEffect(() => {
+        // Avoid making a new request if no valid fileId or data has already been fetched
+        if (!fileIdForRequest || hasFetchedRef.current) return;
+    
         const fetchInvitations = async () => {
-            if (!fileIdForRequest) {
-                setError("Invalid file ID.");
-                setLoading(false);
-                return;
-            }
-
+            setLoading(true);
             try {
-                const response = await axios.get(`http://localhost:8000/api/invitations/${fileIdForRequest}`, {
-                    headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
-                });
-                setInvitations(response.data);
+                const response = await axios.get(
+                    `http://localhost:8000/api/invitations/${fileIdForRequest}`,
+                    {
+                        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+                    }
+                );
+    
+                if (response.data.message) {
+                    setError(response.data.message);
+                } else {
+                    setInvitations(response.data);
+                }
             } catch (err) {
                 setError("Failed to fetch invitations");
             } finally {
                 setLoading(false);
+                hasFetchedRef.current = true;  // Mark as fetched to avoid multiple calls
             }
         };
-
-        if (fileIdForRequest) {
-            fetchInvitations();
-        }
-    }, [fileIdForRequest]);
+    
+        fetchInvitations();
+    }, [fileIdForRequest]); 
 
     const handleRoleChange = (invitationId, newRole) => {
         setRoleChanges((prev) => ({
@@ -56,18 +63,20 @@ const InvitationsModal = ({fileId, onClose}) => {
         try {
             await axios.post(
                 `http://127.0.0.1:8000/api/invitations/role`,
-                {role: newRole, id: invitationId},
+                { role: newRole, id: invitationId },
                 {
-                    headers: {Authorization: `Bearer ${localStorage.getItem("token")}`},
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 }
             );
 
+            // Update the invitations state with the new role
             const updatedInvitations = invitations.map((invitation) =>
-                invitation.id === invitationId ? {...invitation, role: newRole} : invitation
+                invitation.id === invitationId ? { ...invitation, role: newRole } : invitation
             );
             setInvitations(updatedInvitations);
+            // Remove the invitationId from roleChanges after saving
             setRoleChanges((prev) => {
-                const {[invitationId]: _, ...rest} = prev;
+                const { [invitationId]: _, ...rest } = prev;
                 return rest;
             });
         } catch (error) {
@@ -123,7 +132,7 @@ const InvitationsModal = ({fileId, onClose}) => {
                             </tbody>
                         </table>
                     ) : (
-                        <p>No collaborators found for this file.</p>
+                        !loading && <p>No collaborators found for this file.</p>
                     )}
                 </div>
 

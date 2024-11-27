@@ -102,10 +102,11 @@ class InvitationController extends Controller
             ->whereIn('status', ['accepted', 'pending','declined'])
             ->get();    
         if ($collaborators->isEmpty()) {
-            return response()->json(['message' => 'No collaborators found for this file.'], 404);
+            return response()->json(['message' => 'No collaborators found for this file.']);
         }
         return response()->json($collaborators);
     }
+    
     public function changeRole(Request $request){
         $invitation=Invitation::where('id',$request->id)->first();
         if (!$invitation) {
