@@ -53,10 +53,11 @@
 .fileActions {
     display: flex;
     justify-content: space-between;
-    padding-top: 10px;
+    padding-top: 5px;
 }
 
 /* Save File Button */
+.logoutBtn,
 .saveFileBtn,
 .inviteBtn {
     padding: 10px;
@@ -69,6 +70,13 @@
     border-radius: 5px;
     transition: background-color 0.3s ease, transform 0.2s ease;
 }
+.logoutBtn{
+    background-color: red;
+}
+.logoutBtn:hover{
+    background-color: rgba(255, 0, 0, 0.742);
+}
+
 
 /* Save File Button Hover */
 .saveFileBtn:hover,

@@ -6,6 +6,7 @@ import InviteUserForm from "./InviteUserForm";
 import {useFileContent} from "../contexts/FileContentContext";
 import {addFile, setCurrentFile, setError, setLoading, setFiles} from "../redux/features/fileSlice";
 import InvitationsModal from "./InvitationsModal";
+import { useNavigate } from "react-router-dom"; 
 import CodeEditor from "./CodeEditor";
 
 const languageMap = {
@@ -54,11 +55,17 @@ const FileTabs = () => {
     const files = useSelector((state) => state.file.files);
     const currentFile = useSelector((state) => state.file.currentFile);
     const {setFileContent, setLanguage} = useFileContent();
+    const navigate = useNavigate();
 
     const [showInviteForm, setShowInviteForm] = useState(false);
     const [showFileInputs, setShowFileInputs] = useState(false);
     const [newFileName, setNewFileName] = useState("");
     const [showInvitationsModal, setShowInvitationsModal] = useState(false);
+
+    const handleLogout = () => {
+        localStorage.removeItem("token"); 
+        navigate("/login");
+    };
 
     // Fetch files when component mounts
     useEffect(() => {
@@ -154,6 +161,11 @@ const FileTabs = () => {
                         Collaborators
                     </button>
                 )}
+            </div>
+            <div className={styles.fileActions}>
+                <button onClick={handleLogout} className={styles.logoutBtn}>
+                    Log Out
+                </button>
             </div>
 
             {showInviteForm && <InviteUserForm fileId={currentFile} onClose={() => setShowInviteForm(false)} />}

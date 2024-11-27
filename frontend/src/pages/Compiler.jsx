@@ -16,16 +16,6 @@ const Compiler = () => {
 
   const [channels, setChannels] = useState([]);
 
-  // Create a new file
-  const handleNewFile = () => {
-    const newFile = {
-      name: `newFile-${files.length + 1}`,
-      content: CODE_SNIPPETS.javascript,
-      language: "javascript",
-    };
-    setFiles([...files, newFile]);
-    setSelectedFile(newFile.name);
-  };
 
   // Switch between files
   const handleFileSelect = (fileName) => {
@@ -39,7 +29,6 @@ const Compiler = () => {
           files={files}
           selectedFile={selectedFile}
           onFileSelect={handleFileSelect}
-          onNewFile={handleNewFile}
           onSaveFile={() => alert("Save File Logic Goes Here")}
           onInvite={() => alert("Invite Logic Goes Here")}
         />
