@@ -3,7 +3,7 @@ import Modal from "./Modal";
 import { Editor } from "@monaco-editor/react";
 import { CODE_SNIPPETS } from "../constant";
 import { useRef, useState, useEffect } from "react";
-import { useSelector } from 'react-redux'; 
+import { useSelector } from "react-redux";
 import styles from "../styles/CodeEditor.module.css";
 import { useFileContent } from "../contexts/FileContentContext";
 import DropdownButton from "./DropDown";
@@ -23,6 +23,8 @@ const CodeEditor = () => {
   // Get the current file from Redux store
   const currentFile = useSelector((state) => state.file.currentFile);
 
+  //console.log(currentFile);
+
   const onMount = (editor) => {
     editorRef.current = editor;
     editor.focus();
@@ -32,15 +34,14 @@ const CodeEditor = () => {
     setValue(fileContent);
   }, [fileContent]);
 
-  const filePath = "http://localhost:8000/storage/files/zayan.js";
   useEffect(() => {
-    if (!filePath) return;
-
     const pusher = new Pusher("d147720fc37b1e8976ee", {
       cluster: "ap2",
     });
 
-    const channel = pusher.subscribe(`file.${currentFile}`); 
+    console.log(currentFile);
+    
+    const channel = pusher.subscribe(`file.${currentFile}`);
 
     channel.bind("FileUpdated", function (data) {
       setValue(data.content);
@@ -97,7 +98,6 @@ const CodeEditor = () => {
       setTimeout(() => {
         setAnalysis(response.data.analysis);
       }, 200);
-      
     } catch (error) {
       console.error("Error analyzing code:", error);
       alert("Failed to analyze code. Please try again.");
@@ -147,7 +147,11 @@ const CodeEditor = () => {
         />
         <div className={styles.bttnsContainer}>
           {/* Run Button */}
-          <button className={styles.runButton} onClick={runCode} disabled={loading}>
+          <button
+            className={styles.runButton}
+            onClick={runCode}
+            disabled={loading}
+          >
             {loading ? "Running..." : "Run Code"}
           </button>
 
