@@ -107,13 +107,12 @@ class InvitationController extends Controller
         return response()->json($collaborators);
     }
     public function changeRole(Request $request){
-        $invitation=Invitation::where('invited_email',$request->invited_email)->where('file_id',$request->file_id)->first();
+        $invitation=Invitation::where('id',$request->id)->first();
         if (!$invitation) {
-            return response()->json(['error' => 'Invitation not found or not associated with this file'], 404);
+            return response()->json(['error' => `$invitation Invitation not found or not associated with this file`], 404);
         }
-        $invitation->role = $invitation->role === 'editor' ? 'viewer' : 'editor';
+        $invitation->role = $request->role ;
         $invitation->save();
         return response()->json([$invitation->role], 200);
     }
 }
-
