@@ -6,6 +6,7 @@ import InviteUserForm from "./InviteUserForm";
 import {useFileContent} from "../contexts/FileContentContext";
 import {addFile, setCurrentFile, setError, setLoading, setFiles} from "../redux/features/fileSlice";
 import InvitationsModal from "./InvitationsModal";
+import CodeEditor from "./CodeEditor";
 
 const languageMap = {
     js: "javascript",

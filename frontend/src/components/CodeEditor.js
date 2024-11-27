@@ -3,6 +3,7 @@ import Modal from "./Modal";
 import { Editor } from "@monaco-editor/react";
 import { CODE_SNIPPETS } from "../constant";
 import { useRef, useState, useEffect } from "react";
+import { useSelector } from 'react-redux'; 
 import styles from "../styles/CodeEditor.module.css";
 import { useFileContent } from "../contexts/FileContentContext";
 import DropdownButton from "./DropDown";
@@ -10,7 +11,7 @@ import { executeCode } from "./api";
 import OutPut from "./OutPut";
 import Pusher from "pusher-js";
 
-const CodeEditor = ({ selectedFile }) => {
+const CodeEditor = () => {
   const { fileContent, language, setLanguage } = useFileContent();
   const [value, setValue] = useState(fileContent || "");
   const [output, setOutput] = useState(null);
@@ -18,6 +19,9 @@ const CodeEditor = ({ selectedFile }) => {
   const [error, setError] = useState("");
   const [analysis, setAnalysis] = useState("");
   const editorRef = useRef();
+
+  // Get the current file from Redux store
+  const currentFile = useSelector((state) => state.file.currentFile);
 
   const onMount = (editor) => {
     editorRef.current = editor;
@@ -33,35 +37,16 @@ const CodeEditor = ({ selectedFile }) => {
       cluster: "ap2",
     });
 
-    const channel = pusher.subscribe(`file.${selectedFile}`);
+    const channel = pusher.subscribe(`file.${currentFile}`); 
 
     channel.bind("FileUpdated", function (data) {
       setValue(data.content);
     });
 
     return () => {
-      pusher.unsubscribe(`file.${selectedFile}`);
+      pusher.unsubscribe(`file.${currentFile}`);
     };
-  }, [selectedFile]);
-
-  const handleCodeChange = (newCode) => {
-    setValue(newCode);
-
-    // sending the updated code to the server to be saved and broadcasted
-    axios
-      .post(
-        "http://localhost:8000/api/files/update",
-        { content: newCode, fileName: selectedFile },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      )
-      .catch((error) => {
-        console.error("Error updating file:", error);
-      });
-  };
+  }, [currentFile]);
 
   const handleLanguageSelect = (lang) => {
     setLanguage(lang);
@@ -78,7 +63,6 @@ const CodeEditor = ({ selectedFile }) => {
     setError("");
     try {
       const { run } = await executeCode(language, sourceCode);
-      console.log(language);
       setOutput(run.output.split("\n"));
     } catch (err) {
       setError("An error occurred while running the code.");
@@ -114,6 +98,38 @@ const CodeEditor = ({ selectedFile }) => {
     }
   };
 
+  const saveFile = async () => {
+    const sourceCode = editorRef.current.getValue();
+    if (!sourceCode) {
+      setError("No content to save.");
+      return;
+    }
+
+    if (!currentFile) {
+      setError("No file selected.");
+      return;
+    }
+
+    try {
+      await axios.post(
+        "http://localhost:8000/api/files/update",
+        {
+          fileName: currentFile,
+          content: sourceCode,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      alert("File saved successfully!");
+    } catch (error) {
+      setError("Error saving file. Please try again.");
+    }
+  };
+
   return (
     <div className={styles.editorContainer}>
       <h3 className={styles.languageHeader}>LANGUAGES</h3>
@@ -124,15 +140,19 @@ const CodeEditor = ({ selectedFile }) => {
           handleLanguageSelect={handleLanguageSelect}
         />
         <div className={styles.bttnsContainer}>
-          <button
-            className={styles.runButton}
-            onClick={runCode}
-            disabled={loading}
-          >
+          {/* Run Button */}
+          <button className={styles.runButton} onClick={runCode} disabled={loading}>
             {loading ? "Running..." : "Run Code"}
           </button>
+
+          {/* Analyze Button */}
           <button className={styles.analyisBttn} onClick={handleAnalyzeCode}>
             Analyze Code
+          </button>
+
+          {/* Save Button */}
+          <button className={styles.saveButton} onClick={saveFile}>
+            Save File
           </button>
         </div>
       </div>
@@ -143,7 +163,7 @@ const CodeEditor = ({ selectedFile }) => {
           theme="vs-dark"
           language={language}
           value={value}
-          onChange={handleCodeChange}
+          onChange={setValue}
           onMount={onMount}
           defaultValue={CODE_SNIPPETS[language]}
         />

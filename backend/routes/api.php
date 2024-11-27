@@ -17,11 +17,11 @@ Route::get('/invitations/deny/{id}', [InvitationController::class, 'denyInvitati
 
 Route::get('/files/{filename}', function ($filename) {
     $filePath = "files/{$filename}";
-    // Check if the file exists in the public directory
+
     if (!Storage::disk('public')->exists($filePath)) {
         return response()->json(['error' => 'File not found'], 404);
     }
-    // Get the file contents
+
     $fileContents = Storage::disk('public')->get($filePath);
     return response()->json([
         'content' => $fileContents,
@@ -43,7 +43,8 @@ Route::middleware('jwt.auth')->group(function () {
         Route::get('{id}', [FileController::class, 'fetch_file']); 
         Route::put('{id}', [FileController::class, 'edit_file']);
         Route::delete('{id}', [FileController::class, 'delete_file']); 
-        Route::post('/update', [FileController::class, 'update_file']);
+        Route::post('/update', [FileController::class, 'updateFile']);
+
     });
 
     Route::prefix('invitations')->group(function () {

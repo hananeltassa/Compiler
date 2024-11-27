@@ -126,18 +126,36 @@ class FileController extends Controller
         ]);
     }
 
-    public function update_file(Request $request)
+    public function updateFile(Request $request)
     {
-        $fileName = $request->fileName;
-        $content = $request->content;
-
-        Storage::disk('public')->put("files/{$fileName}", $content);
-
-        // Broadcast the code change to other users
-        broadcast(new FileUpdated($fileName, $content));
-
-        return response()->json([
-            'message' => 'File updated'
+        $request->validate([
+            'fileName' => 'required|string',
+            'content' => 'required|string',
         ]);
+    
+        $fileName = $request->input('fileName');
+        $content = $request->input('content');
+    
+        $file = File::where('name', $fileName)->first();
+    
+        if (!$file) {
+            return response()->json(['message' => 'File not found'], 404);
+        }
+    
+        $path = str_replace(url('storage'), '', $file->path);
+    
+        try {
+            Storage::disk('public')->put($path, $content);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to update file content'], 500);
+        }
+
+        $file->content = $content;
+        $file->save();
+    
+        event(new \App\Events\FileUpdated($fileName, $content));
+
+        return response()->json(['message' => 'File updated successfully!']);
     }
+    
 }
