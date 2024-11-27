@@ -17,19 +17,16 @@ class FileUpdated implements ShouldBroadcast
     public $filePath;
     public $content;
 
-    public function __construct($filePath, $content)
-    {
+    public function __construct($filePath, $content){
         $this->filePath = $filePath;
         $this->content = $content;
     }
 
-    public function broadcastOn()
-    {
+    public function broadcastOn(){
         return new Channel('file.' . $this->filePath);
     }
 
-    public function broadcastAs()
-    {
+    public function broadcastAs(){
         return 'FileUpdated';
     }
 }
